@@ -1,25 +1,161 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
 
+// --- COMPONENTE PARA UN ITEM DE LA LISTA DE OPCIONES ---
+const OptionItem = ({ icon, label, onPress }: { icon: string, label: string, onPress?: () => void }) => (
+  <TouchableOpacity style={styles.optionItem} onPress={onPress}>
+    <Text style={styles.optionIcon}>{icon}</Text>
+    <Text style={styles.optionLabel}>{label}</Text>
+    <Text style={styles.optionArrow}>›</Text>
+  </TouchableOpacity>
+);
+
+// --- PANTALLA PRINCIPAL DE CUENTA ---
 const AccountScreen = () => {
+  // Datos de ejemplo para el perfil del usuario
+  const user = {
+    name: 'Juan Pérez',
+    phone: '+1 (555) 123-4567',
+    email: 'juan.perez@email.com',
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Cuenta</Text>
-      <Text>Aquí se mostrará la información de tu cuenta.</Text>
-    </View>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.container}>
+        {/* 1. Tarjeta de Perfil */}
+        <View style={styles.profileCard}>
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>{user.name.charAt(0)}</Text>
+          </View>
+          <View style={styles.profileInfo}>
+            <Text style={styles.profileName}>{user.name}</Text>
+            <Text style={styles.profileDetails}>{user.phone}</Text>
+            <Text style={styles.profileDetails}>{user.email}</Text>
+          </View>
+        </View>
+
+        {/* 2. Lista de Opciones */}
+        <View style={styles.optionsGroup}>
+          <OptionItem icon="💳" label="Billetera" />
+          <OptionItem icon="📍" label="Configuración de ubicación" />
+          <OptionItem icon="🎨" label="Apariencia" />
+          <OptionItem icon="🔄" label="Cambiar de cuenta" />
+        </View>
+
+        {/* 3. Botón de Cerrar Sesión */}
+        <View style={styles.logoutSection}>
+            <TouchableOpacity style={styles.logoutButton}>
+                <Text style={styles.logoutButtonText}>Cerrar Sesión</Text>
+            </TouchableOpacity>
+        </View>
+
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
+// --- ESTILOS ---
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#f7f7f7', // Un color de fondo ligeramente gris
+  },
   container: {
     flex: 1,
+  },
+  // Estilos de la tarjeta de perfil
+  profileCard: {
+    backgroundColor: 'white',
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
+    margin: 16,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  avatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#007AFF', // Un azul vibrante
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
+    marginRight: 16,
   },
-  title: {
-    fontSize: 24,
-    marginBottom: 16,
+  avatarText: {
+    color: 'white',
+    fontSize: 28,
+    fontWeight: 'bold',
+  },
+  profileInfo: {
+    flex: 1,
+  },
+  profileName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  profileDetails: {
+    fontSize: 14,
+    color: '#666',
+  },
+  // Estilos del grupo de opciones
+  optionsGroup: {
+    marginHorizontal: 16,
+    backgroundColor: 'white',
+    borderRadius: 12,
+    overflow: 'hidden', // Para que el borde redondeado se aplique a los hijos
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  optionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0', // Separador muy sutil
+  },
+  optionIcon: {
+    fontSize: 22,
+    marginRight: 16,
+  },
+  optionLabel: {
+    flex: 1,
+    fontSize: 16,
+    color: '#333',
+  },
+  optionArrow: {
+    fontSize: 20,
+    color: '#c7c7cc', // Color de flecha estándar en iOS
+  },
+  // Estilos de la sección de cerrar sesión
+  logoutSection: {
+      margin: 16,
+      marginTop: 32, // Más espacio arriba
+  },
+  logoutButton: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 15,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  logoutButtonText: {
+    color: '#FF3B30', // Un color rojo para indicar una acción destructiva
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

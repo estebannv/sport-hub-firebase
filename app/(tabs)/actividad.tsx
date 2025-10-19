@@ -1,117 +1,198 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, SafeAreaView, Image } from 'react-native';
 import { Link } from 'expo-router';
 
-// Datos de ejemplo para las reservaciones
+// --- DATOS DE EJEMPLO MEJORADOS ---
+// Añadimos un estado ('upcoming' o 'past') y una URL de imagen para un diseño más rico.
 const reservationsData = [
   {
     id: '1',
     centerName: 'Centro Deportivo A',
     location: 'Calle Falsa 123, Ciudad',
-    time: '2024-07-28 18:00',
+    date: '28 de Julio, 2024',
+    time: '18:00',
     price: '$15.00',
+    status: 'upcoming',
+    image: 'https://images.unsplash.com/photo-1557683316-973673baf926?w=500&q=80',
   },
   {
     id: '2',
     centerName: 'Gimnasio Moderno',
     location: 'Avenida Siempre Viva 742',
-    time: '2024-07-29 09:00',
+    date: '29 de Julio, 2024',
+    time: '09:00',
     price: '$25.00',
+    status: 'upcoming',
+    image: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=500&q=80',
   },
   {
     id: '3',
     centerName: 'Piscina Municipal',
     location: 'Boulevard de los Sueños Rotos',
-    time: '2024-08-01 15:30',
+    date: '15 de Junio, 2024',
+    time: '15:30',
     price: '$10.00',
+    status: 'past',
+    image: 'https://images.unsplash.com/photo-1557683316-973673baf926?w=500&q=80',
   },
 ];
 
-const ActivityScreen = () => {
+// --- COMPONENTE PARA LA TARJETA DE RESERVACIÓN ---
+const ReservationCard = ({ item }: { item: any }) => (
+  <Link href={{ pathname: `/reservations/${item.id}`, params: { ...item } }} asChild>
+    <TouchableOpacity style={styles.reservationCard}>
+        <Image source={{ uri: item.image }} style={styles.cardImage} />
+        <View style={styles.cardInfo}>
+            <Text style={styles.cardCenterName}>{item.centerName}</Text>
+            <Text style={styles.cardDate}>{item.date} a las {item.time}</Text>
+            <Text style={styles.cardLocation}>{item.location}</Text>
+            <View style={styles.cardFooter}>
+                <Text style={styles.cardPrice}>{item.price}</Text>
+                <Text style={styles.cardDetailsLink}>Ver detalles</Text>
+            </View>
+        </View>
+    </TouchableOpacity>
+  </Link>
+);
 
-  const renderReservation = ({ item }: { item: { id: string, centerName: string, location: string, time: string, price: string } }) => (
-    <View style={styles.reservationCard}>
-      <Text style={styles.centerName}>{item.centerName}</Text>
-      <Text style={styles.detailText}>Ubicación: {item.location}</Text>
-      <Text style={styles.detailText}>Hora: {item.time}</Text>
-      <Text style={styles.priceText}>Precio: {item.price}</Text>
-      <Link href={{ pathname: `/reservations/${item.id}`, params: { ...item } }} asChild>
-        <TouchableOpacity style={styles.detailsButton}>
-          <Text style={styles.detailsButtonText}>Más detalles</Text>
-        </TouchableOpacity>
-      </Link>
-    </View>
-  );
+// --- PANTALLA PRINCIPAL DE ACTIVIDAD ---
+const ActivityScreen = () => {
+  const [currentView, setCurrentView] = useState('upcoming'); // 'upcoming' o 'past'
+
+  const filteredData = reservationsData.filter(item => item.status === currentView);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Mis Reservaciones</Text>
-      <FlatList
-        data={reservationsData}
-        renderItem={renderReservation}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContainer}
-      />
-    </View>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <Text style={styles.headerTitle}>Actividad</Text>
+        
+        {/* 1. Filtro de Próximas / Anteriores */}
+        <View style={styles.filterContainer}>
+          <TouchableOpacity 
+            style={[styles.filterButton, currentView === 'upcoming' && styles.filterButtonActive]}
+            onPress={() => setCurrentView('upcoming')}
+          >
+            <Text style={[styles.filterText, currentView === 'upcoming' && styles.filterTextActive]}>Próximas</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.filterButton, currentView === 'past' && styles.filterButtonActive]}
+            onPress={() => setCurrentView('past')}
+          >
+            <Text style={[styles.filterText, currentView === 'past' && styles.filterTextActive]}>Anteriores</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* 2. Lista de Reservaciones */}
+        <FlatList
+          data={filteredData}
+          renderItem={({ item }) => <ReservationCard item={item} />}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.listContainer}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
+    </SafeAreaView>
   );
 };
 
+// --- ESTILOS ---
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#f7f7f7',
+  },
   container: {
     flex: 1,
-    paddingTop: 50,
-    backgroundColor: 'white',
+    paddingTop: 16,
   },
-  title: {
-    fontSize: 24,
+  headerTitle: {
+    fontSize: 28,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 16,
   },
+  // Estilos del filtro
+  filterContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#e0e0e0',
+    borderRadius: 30,
+    marginHorizontal: 40,
+    marginBottom: 20,
+    overflow: 'hidden',
+  },
+  filterButton: {
+    flex: 1,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  filterButtonActive: {
+    backgroundColor: '#007AFF',
+  },
+  filterText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+  },
+  filterTextActive: {
+    color: 'white',
+  },
+  // Estilos de la lista
   listContainer: {
     paddingHorizontal: 16,
   },
+  // Estilos de la tarjeta de reservación
   reservationCard: {
-    backgroundColor: '#f0f0f0',
-    borderRadius: 10,
-    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 12,
     marginBottom: 16,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    overflow: 'hidden', // Para que la imagen respete los bordes
   },
-  centerName: {
+  cardImage: {
+      width: '100%',
+      height: 120,
+  },
+  cardInfo: {
+      padding: 16,
+  },
+  cardCenterName: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 8,
   },
-  detailText: {
-    fontSize: 14,
-    color: 'gray',
-    marginBottom: 4,
+  cardDate: {
+      fontSize: 14,
+      color: '#333',
+      marginBottom: 4,
   },
-  priceText: {
+  cardLocation: {
+      fontSize: 14,
+      color: '#666',
+      marginBottom: 12,
+  },
+  cardFooter: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      borderTopWidth: 1,
+      borderTopColor: '#f0f0f0',
+      paddingTop: 12,
+      marginTop: 4,
+  },
+  cardPrice: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginTop: 8,
-    color: '#4CAF50',
+    color: '#000',
   },
-  detailsButton: {
-    marginTop: 12,
-    backgroundColor: '#2196F3',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  detailsButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
+  cardDetailsLink: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: '#007AFF',
+  }
 });
 
 export default ActivityScreen;
