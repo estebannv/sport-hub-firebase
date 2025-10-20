@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
+import { useRouter } from 'expo-router'; // 1. Importar el router
 
 // --- COMPONENTE PARA UN ITEM DE LA LISTA DE OPCIONES ---
 const OptionItem = ({ icon, label, onPress }: { icon: string, label: string, onPress?: () => void }) => (
@@ -12,6 +13,8 @@ const OptionItem = ({ icon, label, onPress }: { icon: string, label: string, onP
 
 // --- PANTALLA PRINCIPAL DE CUENTA ---
 const AccountScreen = () => {
+  const router = useRouter(); // 2. Inicializar el router
+
   // Datos de ejemplo para el perfil del usuario
   const user = {
     name: 'Juan Pérez',
@@ -36,7 +39,8 @@ const AccountScreen = () => {
 
         {/* 2. Lista de Opciones */}
         <View style={styles.optionsGroup}>
-          <OptionItem icon="💳" label="Billetera" />
+          {/* 3. Añadir el evento onPress para navegar */}
+          <OptionItem icon="💳" label="Billetera" onPress={() => router.push('/billetera')} />
           <OptionItem icon="📍" label="Configuración de ubicación" />
           <OptionItem icon="🎨" label="Apariencia" />
           <OptionItem icon="🔄" label="Cambiar de cuenta" />
