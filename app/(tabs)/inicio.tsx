@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, FlatList, TouchableOpacity, Image } from 'react-native';
-import { Link } from 'expo-router'; // 1. Importar Link
+import { Link } from 'expo-router';
 import * as Location from 'expo-location';
 
-// --- DATOS DE EJEMPLO (sin cambios) ---
+// --- DATOS DE EJEMPLO ---
 const sportsCategories = [
   { id: '1', name: 'Fútbol', icon: '⚽' },
   { id: '2', name: 'Basket', icon: '🏀' },
@@ -12,17 +12,18 @@ const sportsCategories = [
   { id: '5', name: 'Gym', icon: '🏋️' },
   { id: '6', name: 'Boxeo', icon: '🥊' },
 ];
+
 const featuredCenters = [
   { id: '1', name: 'Super Padel Center', rating: 4.9, reviews: 500, deliveryTime: 15, image: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=500&q=80' },
   { id: '2', name: 'Gimnasio Rock Solid', rating: 4.7, reviews: 230, deliveryTime: 20, image: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=500&q=80' },
 ];
+
 const popularCenters = [
   { id: '3', name: 'Estadio de Fútbol Local', rating: 4.8, reviews: 800, deliveryTime: 30, image: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=500&q=80' },
   { id: '4', name: 'Club de Tenis Abierto', rating: 4.6, reviews: 150, deliveryTime: 25, image: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=500&q=80' },
 ];
 
-
-// --- COMPONENTES (sin cambios) ---
+// --- COMPONENTES DE LA PANTALLA ---
 const CategoryItem = ({ item }: { item: { name: string, icon: string } }) => (
   <TouchableOpacity style={styles.categoryItem}>
     <View style={styles.categoryIconContainer}>
@@ -31,15 +32,20 @@ const CategoryItem = ({ item }: { item: { name: string, icon: string } }) => (
     <Text style={styles.categoryName}>{item.name}</Text>
   </TouchableOpacity>
 );
-const CenterCard = ({ item }: { item: { name: string, rating: number, reviews: number, deliveryTime: number, image: string } }) => (
-  <TouchableOpacity style={styles.centerCard}>
-    <Image source={{ uri: item.image }} style={styles.centerImage} />
-    <View style={styles.centerInfo}>
-      <Text style={styles.centerName}>{item.name}</Text>
-      <Text style={styles.centerDetails}>⭐️ {item.rating} ({item.reviews}+) • {item.deliveryTime} min</Text>
-    </View>
-  </TouchableOpacity>
+
+// MODIFICADO: CenterCard ahora es un enlace
+const CenterCard = ({ item }: { item: { id: string, name: string, rating: number, reviews: number, deliveryTime: number, image: string } }) => (
+  <Link href={`/center/${item.id}`} asChild>
+    <TouchableOpacity style={styles.centerCard}>
+      <Image source={{ uri: item.image }} style={styles.centerImage} />
+      <View style={styles.centerInfo}>
+        <Text style={styles.centerName}>{item.name}</Text>
+        <Text style={styles.centerDetails}>⭐️ {item.rating} ({item.reviews}+) • {item.deliveryTime} min</Text>
+      </View>
+    </TouchableOpacity>
+  </Link>
 );
+
 const SectionHeader = ({ title }: { title: string }) => (
   <View style={styles.sectionHeader}>
     <Text style={styles.sectionTitle}>{title}</Text>
@@ -60,9 +66,11 @@ const HomeScreen = () => {
         setAddress('Permiso de ubicación denegado');
         return;
       }
+
       try {
         let location = await Location.getCurrentPositionAsync({});
         let geocode = await Location.reverseGeocodeAsync(location.coords);
+        
         if (geocode && geocode.length > 0) {
           const { street, city } = geocode[0];
           setAddress(`${street}, ${city}`);
@@ -77,6 +85,7 @@ const HomeScreen = () => {
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      {/* 1. Barra superior de ubicación */}
       <View style={styles.topBar}>
         <TouchableOpacity style={styles.locationButton}>
           <Text style={styles.locationText} numberOfLines={1}>{address} ▼</Text>
@@ -91,15 +100,15 @@ const HomeScreen = () => {
         </View>
       </View>
 
-      {/* 2. Barra de búsqueda convertida en un botón con Link */}
+      {/* 2. Barra de búsqueda (botón) */}
       <Link href="/search" asChild>
         <TouchableOpacity style={styles.searchBarContainer}>
           <Text style={styles.searchIcon}>🔍</Text>
-          {/* Usamos un Text para simular el placeholder */}
           <Text style={styles.searchBarPlaceholder}>Buscar canchas, gimnasios...</Text>
         </TouchableOpacity>
       </Link>
 
+      {/* 3. Categorías de deportes */}
       <FlatList
         data={sportsCategories}
         renderItem={({ item }) => <CategoryItem item={item} />}
@@ -109,6 +118,7 @@ const HomeScreen = () => {
         contentContainerStyle={styles.categoriesList}
       />
 
+      {/* 4. Sección "Destacados" */}
       <SectionHeader title="Destacados en tu zona" />
       <FlatList
         data={featuredCenters}
@@ -119,6 +129,7 @@ const HomeScreen = () => {
         contentContainerStyle={styles.centersList}
       />
 
+      {/* 5. Sección "Populares" */}
       <SectionHeader title="Populares esta semana" />
        <FlatList
         data={popularCenters}
@@ -133,7 +144,8 @@ const HomeScreen = () => {
   );
 };
 
-// --- ESTILOS ---
+// --- ESTILOS (sin cambios) ---
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -175,10 +187,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginRight: 10,
   },
-  // 3. Estilo para el texto que simula el placeholder
   searchBarPlaceholder: {
     fontSize: 16,
-    color: '#8e8e93', 
+    color: '#8e8e93',
   },
   categoriesList: {
     paddingHorizontal: 16,
