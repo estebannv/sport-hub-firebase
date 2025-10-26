@@ -1,9 +1,27 @@
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { getProvinces, getCantons, getDistricts } from '../services/location.service';
+import { Location } from '../types/location.type';
 
 const RegisterScreen = () => {
   const router = useRouter();
+  const [provinces, setProvinces] = useState<Location[]>([]);
+  const [cantons, setCantons] = useState<Location[]>([]);
+  const [districts, setDistricts] = useState<Location[]>([]);
+
+  useEffect(() => {
+    const fetchProvinces = async () => {
+      try {
+        const data = await getProvinces();
+        setProvinces(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchProvinces();
+  }, []);
 
   const handleRegister = () => {
     // Lógica de registro aquí
