@@ -25,13 +25,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="torneo"
-        options={{
-          title: 'Torneos',
-          //tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
         name="actividad"
         options={{
           title: 'Actividad',

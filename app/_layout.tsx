@@ -13,11 +13,10 @@ export default function RootLayout() {
     <ThemeProvider value={DefaultTheme}>
       <Stack
         screenOptions={{
-          headerShown: true,
+          headerShown: false,
           headerBackTitle: 'Atrás',
         }}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        
+
         <Stack.Screen 
           name="reservations" 
           options={{ 
@@ -26,16 +25,13 @@ export default function RootLayout() {
           }} 
         />
         
-        {/* Añadimos la nueva pantalla de búsqueda como un modal sin encabezado */}
         <Stack.Screen 
           name="search" 
           options={{ 
-            // presentation: 'modal',
+            presentation: 'modal',
             headerShown: false, 
           }} 
         />
-        
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
