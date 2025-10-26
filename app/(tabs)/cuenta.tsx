@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router'; // 1. Importar el router
+import React from 'react';
+import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 // --- COMPONENTE PARA UN ITEM DE LA LISTA DE OPCIONES ---
 const OptionItem = ({ icon, label, onPress }: { icon: string, label: string, onPress?: () => void }) => (
@@ -43,7 +43,6 @@ const AccountScreen = () => {
           <OptionItem icon="💳" label="Billetera" onPress={() => router.push('/billetera')} />
           <OptionItem icon="📍" label="Configuración de ubicación" />
           <OptionItem icon="🎨" label="Apariencia" />
-          <OptionItem icon="🔄" label="Cambiar de cuenta" />
         </View>
 
         {/* 3. Botón de Cerrar Sesión */}

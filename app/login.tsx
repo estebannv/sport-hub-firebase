@@ -1,6 +1,7 @@
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native';
-import { useRouter, Link } from 'expo-router';
+import { KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Colors } from '../constants/theme';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -19,137 +20,134 @@ const LoginScreen = () => {
         behavior={Platform.OS === "ios" ? "padding" : "height"} 
         style={styles.container}
       >
-        {/* 1. Logo Placeholder */}
-        <View style={styles.logoContainer}>
-            <Text style={styles.logoText}>[LOGO]</Text>
-        </View>
-
         <View style={styles.header}>
-            <Text style={styles.title}>Bienvenido de Vuelta</Text>
-            <Text style={styles.subtitle}>Inicia sesión para continuar.</Text>
+          <Text style={styles.headerText}>¿No tienes una cuenta?</Text>
+          <TouchableOpacity onPress={() => router.push('/register')}>
+            <Text style={styles.registerLink}>Crea una aquí</Text>
+          </TouchableOpacity>
         </View>
 
-        {/* 2. Formulario de Login */}
+        <Text style={styles.title}>Bienvenido de Vuelta</Text>
+        <Text style={styles.subtitle}>Inicia sesión para continuar.</Text>
+
         <View style={styles.form}>
-            <Text style={styles.label}>Correo Electrónico</Text>
             <TextInput
                 style={styles.input}
                 placeholder="tu.correo@ejemplo.com"
-                placeholderTextColor="#A9A9A9"
+                placeholderTextColor={Colors.light.icon}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
             />
 
-            <Text style={styles.label}>Contraseña</Text>
             <TextInput
                 style={styles.input}
                 placeholder="••••••••"
-                placeholderTextColor="#A9A9A9"
+                placeholderTextColor={Colors.light.icon}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
             />
         </View>
 
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-            <Text style={styles.loginButtonText}>Iniciar Sesión</Text>
-        </TouchableOpacity>
-
-        {/* 3. Enlace para Crear Cuenta */}
-        <View style={styles.registerPrompt}>
-            <Text style={styles.registerPromptText}>¿No tienes una cuenta?</Text>
-            <Link href="/register" asChild>
-                <TouchableOpacity>
-                    <Text style={styles.registerLink}>Crea una aquí</Text>
-                </TouchableOpacity>
-            </Link>
+        <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.primaryButton} onPress={handleLogin}>
+                <Text style={styles.primaryButtonText}>Continuar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.secondaryButton}>
+                <Text style={styles.secondaryButtonText}>Continuar con SSO</Text>
+            </TouchableOpacity>
         </View>
+
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  safeArea: { 
+    flex: 1, 
+    backgroundColor: Colors.light.background 
+  },
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     paddingHorizontal: 24,
   },
-  logoContainer: {
-      alignItems: 'center',
-      marginBottom: 32,
-  },
-  logoText: {
-      fontSize: 48,
-      fontWeight: 'bold',
-      color: '#D3D3D3',
-  },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
     alignItems: 'center',
-    marginBottom: 32,
+    paddingVertical: 16,
+  },
+  headerText: {
+    fontSize: 16,
+    color: Colors.light.text,
+  },
+  registerLink: {
+    fontSize: 16,
+    color: Colors.light.tint,
+    fontWeight: 'bold',
+    marginLeft: 6,
   },
   title: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: 'bold',
-    color: '#1E1E1E',
+    color: Colors.light.text,
+    marginBottom: 8,
+    marginTop: 20,
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
-    marginTop: 8,
+    color: Colors.light.text,
+    marginBottom: 32,
+    lineHeight: 22,
   },
   form: {
     width: '100%',
   },
-  label: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#1E1E1E',
-    marginBottom: 8,
-  },
   input: {
     width: '100%',
     height: 50,
-    backgroundColor: '#F7F7F7',
-    borderRadius: 8,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
     paddingHorizontal: 16,
     fontSize: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#E8E8E8',
+    borderColor: Colors.light.border,
   },
-  loginButton: {
+  buttonContainer: {
+    width: '100%',
+    marginTop: 24, 
+  },
+  primaryButton: {
     width: '100%',
     height: 50,
-    backgroundColor: '#007AFF',
+    backgroundColor: Colors.light.tint,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 8,
-    marginTop: 16,
+    borderRadius: 12,
+    marginBottom: 12,
   },
-  loginButtonText: {
+  primaryButtonText: {
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
   },
-  registerPrompt: {
-    flexDirection: 'row',
+  secondaryButton: {
+    width: '100%',
+    height: 50,
+    backgroundColor: Colors.light.secondaryButton,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 24,
+    borderRadius: 12,
   },
-  registerPromptText: {
-    fontSize: 16,
-    color: '#666',
-  },
-  registerLink: {
-    fontSize: 16,
-    color: '#007AFF',
+  secondaryButtonText: {
+    color: Colors.light.text,
+    fontSize: 18,
     fontWeight: 'bold',
-    marginLeft: 6,
   },
 });
 
