@@ -1,20 +1,24 @@
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { getProvinces, getCantons, getDistricts } from '../services/location.service';
-import { Location } from '../types/location.type';
+import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, } from 'react-native';
+import { Dropdown } from 'react-native-element-dropdown';
+import { getProvinces } from '../services/location.service';
 
 const RegisterScreen = () => {
   const router = useRouter();
-  const [provinces, setProvinces] = useState<Location[]>([]);
-  const [cantons, setCantons] = useState<Location[]>([]);
-  const [districts, setDistricts] = useState<Location[]>([]);
+  const [provincias, setProvincias] = useState<{ label: string; value: number }[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [provinciaId, setProvinciaId] = useState(null);
 
   useEffect(() => {
     const fetchProvinces = async () => {
       try {
         const data = await getProvinces();
-        setProvinces(data);
+        const formatted = data.map((p) => ({
+          label: p.name,
+          value: p.id,
+        }));
+        setProvincias(formatted);
       } catch (error) {
         console.error(error);
       }
@@ -74,10 +78,15 @@ const RegisterScreen = () => {
                     />
 
                     <Text style={styles.label}>Provincia</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Ej: San José"
-                        placeholderTextColor="#A9A9A9"
+
+                    <Dropdown
+                      style={styles.dropdown}
+                      data={provincias}
+                      labelField="label"
+                      valueField="value"
+                      placeholder="Provincia"
+                      value={provinciaId}
+                      onChange={(item) => setProvinciaId(item.value)}
                     />
 
                     <Text style={styles.label}>Cantón</Text>
@@ -184,6 +193,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 6,
   },
+    iconStyle: {
+      width: 20,
+      height: 20,
+    },
+    dropdown: {
+      height: 50,
+      borderColor: 'gray',
+      borderWidth: 0.5,
+      borderRadius: 8,
+      paddingHorizontal: 8,
+    },
 });
 
 export default RegisterScreen;

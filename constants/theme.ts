@@ -5,19 +5,19 @@
 
 import { Platform } from 'react-native';
 
-const tintColorLight = '#3B82F6';
+const tintColorLight = '#ff1e00c2';
 const tintColorDark = '#fff';
 
 export const Colors = {
   light: {
-    text: '#11181C',
+    text: '#000000c9',
     background: '#fff',
     tint: tintColorLight,
     icon: '#687076',
     tabIconDefault: '#687076',
     tabIconSelected: tintColorLight,
     border: '#D1D5DB',
-    secondaryButton: '#F3F4F6',
+    secondaryButton: '#e6e6e6f3',
   },
   dark: {
     text: '#ECEDEE',
@@ -55,3 +55,7 @@ export const Fonts = Platform.select({
     mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
   },
 });
+
+export const GlobalStyle = {
+  BorderRadius: 10
+};

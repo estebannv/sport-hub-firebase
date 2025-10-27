@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { Colors } from '../constants/theme';
+import { Colors, GlobalStyle } from '../constants/theme';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -9,9 +9,7 @@ const LoginScreen = () => {
   const router = useRouter();
 
   const handleLogin = () => {
-    console.log('Email:', email);
-    console.log('Password:', password);
-    router.replace('/(tabs)/inicio'); // Usamos replace para no poder volver al login
+    router.replace('/(tabs)/inicio');
   };
 
   return (
@@ -20,17 +18,9 @@ const LoginScreen = () => {
         behavior={Platform.OS === "ios" ? "padding" : "height"} 
         style={styles.container}
       >
-        <View style={styles.header}>
-          <Text style={styles.headerText}>¿No tienes una cuenta?</Text>
-          <TouchableOpacity onPress={() => router.push('/register')}>
-            <Text style={styles.registerLink}>Crea una aquí</Text>
-          </TouchableOpacity>
-        </View>
+        <Text style={styles.title}>Iniciar sesión</Text>
 
-        <Text style={styles.title}>Bienvenido de Vuelta</Text>
-        <Text style={styles.subtitle}>Inicia sesión para continuar.</Text>
-
-        <View style={styles.form}>
+        <View>
             <TextInput
                 style={styles.input}
                 placeholder="tu.correo@ejemplo.com"
@@ -51,12 +41,19 @@ const LoginScreen = () => {
             />
         </View>
 
-        <View style={styles.buttonContainer}>
+        <View style={styles.registerSection}>
+          <Text style={styles.registerSectionText}>¿No tienes una cuenta?</Text>
+          <TouchableOpacity onPress={() => router.push('/register')}>
+            <Text style={styles.registerLink}>Registrarse</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View>
             <TouchableOpacity style={styles.primaryButton} onPress={handleLogin}>
                 <Text style={styles.primaryButtonText}>Continuar</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.secondaryButton}>
-                <Text style={styles.secondaryButtonText}>Continuar con SSO</Text>
+            <TouchableOpacity style={styles.secondaryButton} onPress={handleLogin}>
+                <Text style={styles.secondaryButtonText}>Continuar con Google</Text>
             </TouchableOpacity>
         </View>
 
@@ -75,13 +72,13 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     paddingHorizontal: 24,
   },
-  header: {
+  registerSection: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    paddingVertical: 16,
+    alignSelf: 'center',
+    paddingTop: 15,
+    paddingBottom: 35,
   },
-  headerText: {
+  registerSectionText: {
     fontSize: 16,
     color: Colors.light.text,
   },
@@ -92,35 +89,27 @@ const styles = StyleSheet.create({
     marginLeft: 6,
   },
   title: {
-    fontSize: 28,
+    fontSize: 20,
     fontWeight: 'bold',
     color: Colors.light.text,
-    marginBottom: 8,
-    marginTop: 20,
+    marginVertical: 35,
+    alignSelf: 'center',
   },
   subtitle: {
     fontSize: 16,
     color: Colors.light.text,
-    marginBottom: 32,
-    lineHeight: 22,
-  },
-  form: {
-    width: '100%',
+    marginBottom: 25,
   },
   input: {
     width: '100%',
     height: 50,
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
+    borderRadius: GlobalStyle.BorderRadius,
     paddingHorizontal: 16,
     fontSize: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: Colors.light.border,
-  },
-  buttonContainer: {
-    width: '100%',
-    marginTop: 24, 
+    borderColor: Colors.light.border
   },
   primaryButton: {
     width: '100%',
@@ -128,12 +117,12 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.tint,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 12,
+    borderRadius: GlobalStyle.BorderRadius,
     marginBottom: 12,
   },
   primaryButtonText: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 16.5,
     fontWeight: 'bold',
   },
   secondaryButton: {
@@ -142,11 +131,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.secondaryButton,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 12,
+    borderRadius: GlobalStyle.BorderRadius,
   },
   secondaryButtonText: {
     color: Colors.light.text,
-    fontSize: 18,
+    fontSize: 16.5,
     fontWeight: 'bold',
   },
 });

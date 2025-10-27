@@ -1,4 +1,5 @@
 
+import { ApiResponse } from '../types/api-response.type';
 import { Location } from '../types/location.type';
 
 const API_URL = 'http://localhost:8090/location';
@@ -8,7 +9,8 @@ export const getProvinces = async (): Promise<Location[]> => {
   if (!response.ok) {
     throw new Error('Error fetching provinces');
   }
-  return response.json();
+  const json: ApiResponse<Location[]> = await response.json();
+  return json.Data;
 };
 
 export const getCantons = async (provinceId: number): Promise<Location[]> => {
