@@ -2,23 +2,30 @@ import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
-import { getProvinces } from '../services/location.service';
+import { Colors, GlobalStyle } from '../constants/theme';
+import LocationService from '../services/location.service';
 
 const RegisterScreen = () => {
+
   const router = useRouter();
-  const [provincias, setProvincias] = useState<{ label: string; value: number }[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [provinciaId, setProvinciaId] = useState(null);
+
+  const [provinceArray, setProvinceArray] = useState<{ label: string; value: number }[]>([]);
+  const [cityArray, setCityArray] = useState<{ label: string; value: number }[]>([]);
+  const [districtArray, setDistrictArray] = useState<{ label: string; value: number }[]>([]);
+
+  const [provinceId, setProvinceId] = useState(0);
+  const [cityId, setCityId] = useState(0);
+  const [districtId, setDistrictId] = useState(0);
 
   useEffect(() => {
     const fetchProvinces = async () => {
       try {
-        const data = await getProvinces();
+        const data = await LocationService.GetProvinces();
         const formatted = data.map((p) => ({
           label: p.name,
           value: p.id,
         }));
-        setProvincias(formatted);
+        setProvinceArray(formatted);
       } catch (error) {
         console.error(error);
       }
@@ -26,6 +33,34 @@ const RegisterScreen = () => {
 
     fetchProvinces();
   }, []);
+
+  const fetchCities = async (provinceId: number) => {
+    try {
+      const data = await LocationService.GetCities(provinceId);
+      const formatted = data.map((p) => ({
+        label: p.name,
+        value: p.id,
+      }));
+      setProvinceId(provinceId)
+      setCityArray(formatted);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchDistricts = async (cityId: number) => {
+    try {
+      const data = await LocationService.GetDistricts(provinceId, cityId);
+      const formatted = data.map((p) => ({
+        label: p.name,
+        value: p.id,
+      }));
+      setCityId(cityId);
+      setDistrictArray(formatted);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleRegister = () => {
     // Lógica de registro aquí
@@ -48,60 +83,67 @@ const RegisterScreen = () => {
 
                 <View style={styles.form}>
 
-                    <Text style={styles.label}>Correo electrónico</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="johndoe@example.com"
-                        placeholderTextColor="#A9A9A9"
-                    />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Nombre completo"
+                    placeholderTextColor={Colors.light.icon}
+                    // value={email}
+                    // onChangeText={setEmail}
+                    autoCapitalize="none"
+                  />
+                  
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Correo electrónico"
+                    placeholderTextColor={Colors.light.icon}
+                    // value={email}
+                    // onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                  />
 
-                    <Text style={styles.label}>Nombre completo</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="John Doe"
-                        placeholderTextColor="#A9A9A9"
-                    />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Teléfono"
+                    placeholderTextColor={Colors.light.icon}
+                    // value={email}
+                    // onChangeText={setEmail}
+                    keyboardType="phone-pad"
+                  />
+                  
+                  <Dropdown
+                    style={styles.input}
+                    data={provinceArray}
+                    labelField="label"
+                    valueField="value"
+                    placeholder="Provincia"
+                    value={provinceId}
+                    onChange={(item) => fetchCities(item.value)}
+                    placeholderStyle={{ color: Colors.light.icon }}
+                  />
 
-                    <Text style={styles.label}>Fecha de nacimiento</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="DD/MM/AAAA"
-                        placeholderTextColor="#A9A9A9"
-                    />
+                  <Dropdown
+                    style={styles.input}
+                    data={cityArray}
+                    labelField="label"
+                    valueField="value"
+                    placeholder="Cantón"
+                    value={cityId}
+                    onChange={(item) => fetchDistricts(item.value)}
+                    placeholderStyle={{ color: Colors.light.icon }}
+                  />
 
-                    <Text style={styles.label}>Teléfono</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="+506 8888-8888"
-                        placeholderTextColor="#A9A9A9"
-                        keyboardType="phone-pad"
-                    />
+                  <Dropdown
+                    style={styles.input}
+                    data={districtArray}
+                    labelField="label"
+                    valueField="value"
+                    placeholder="Distrito"
+                    value={districtId}
+                    onChange={(item) => setDistrictId(item.value)}
+                    placeholderStyle={{ color: Colors.light.icon }}
+                  />
 
-                    <Text style={styles.label}>Provincia</Text>
-
-                    <Dropdown
-                      style={styles.dropdown}
-                      data={provincias}
-                      labelField="label"
-                      valueField="value"
-                      placeholder="Provincia"
-                      value={provinciaId}
-                      onChange={(item) => setProvinciaId(item.value)}
-                    />
-
-                    <Text style={styles.label}>Cantón</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Ej: Santa Ana"
-                        placeholderTextColor="#A9A9A9"
-                    />
-
-                    <Text style={styles.label}>Distrito</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Ej: Uruca"
-                        placeholderTextColor="#A9A9A9"
-                    />
                 </View>
 
                 <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
@@ -152,16 +194,16 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   input: {
-    width: '100%',
-    height: 50,
-    backgroundColor: '#F7F7F7',
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#E8E8E8',
-  },
+      width: '100%',
+      height: 50,
+      backgroundColor: '#FFFFFF',
+      borderRadius: GlobalStyle.BorderRadius,
+      paddingHorizontal: 16,
+      fontSize: 16,
+      marginBottom: 16,
+      borderWidth: 1,
+      borderColor: Colors.light.border
+    },
   registerButton: {
     width: '100%',
     height: 50,
