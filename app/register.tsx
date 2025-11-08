@@ -18,23 +18,23 @@ const RegisterScreen = () => {
   const [districtId, setDistrictId] = useState(0);
 
   useEffect(() => {
-    const fetchProvinces = async () => {
-      try {
-        const data = await LocationService.GetProvinces();
-        const formatted = data.map((p) => ({
-          label: p.name,
-          value: p.id,
-        }));
-        setProvinceArray(formatted);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchProvinces();
+    FillProvinceDropdown();
   }, []);
 
-  const fetchCities = async (provinceId: number) => {
+  const FillProvinceDropdown = async () => {
+    try {
+      const data = await LocationService.GetProvinces();
+      const formatted = data.map((p) => ({
+        label: p.name,
+        value: p.id,
+      }));
+      setProvinceArray(formatted);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const OnChangeProvinceDropdown = async (provinceId: number) => {
     try {
       const data = await LocationService.GetCities(provinceId);
       const formatted = data.map((p) => ({
@@ -43,12 +43,13 @@ const RegisterScreen = () => {
       }));
       setProvinceId(provinceId)
       setCityArray(formatted);
+      setDistrictArray([]);
     } catch (error) {
       console.error(error);
     }
   };
 
-  const fetchDistricts = async (cityId: number) => {
+  const OnChangeCityDropdown = async (cityId: number) => {
     try {
       const data = await LocationService.GetDistricts(provinceId, cityId);
       const formatted = data.map((p) => ({
@@ -118,7 +119,7 @@ const RegisterScreen = () => {
                     valueField="value"
                     placeholder="Provincia"
                     value={provinceId}
-                    onChange={(item) => fetchCities(item.value)}
+                    onChange={(item) => OnChangeProvinceDropdown(item.value)}
                     placeholderStyle={{ color: Colors.light.icon }}
                   />
 
@@ -129,7 +130,7 @@ const RegisterScreen = () => {
                     valueField="value"
                     placeholder="Cantón"
                     value={cityId}
-                    onChange={(item) => fetchDistricts(item.value)}
+                    onChange={(item) => OnChangeCityDropdown(item.value)}
                     placeholderStyle={{ color: Colors.light.icon }}
                   />
 
@@ -147,7 +148,7 @@ const RegisterScreen = () => {
                 </View>
 
                 <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-                    <Text style={styles.registerButtonText}>Crear Cuenta</Text>
+                    <Text style={styles.registerButtonText}>Continuar</Text>
                 </TouchableOpacity>
 
                 <View style={styles.loginPrompt}>
