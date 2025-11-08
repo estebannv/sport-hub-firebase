@@ -15,7 +15,6 @@ const handleResponse = async <T>(response: Response): Promise<T> => {
 export const locationService = {
   async GetProvinces(): Promise<LocationType[]> {
     const url = `${api}?provinceId=0&cityId=0`;
-    console.log(url)
     return handleResponse<LocationType[]>(await fetch(url));
   },
 

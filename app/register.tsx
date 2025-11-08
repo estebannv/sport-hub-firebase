@@ -1,7 +1,7 @@
+import PasswordStrength from '@/components/PasswordStrength';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, } from 'react-native';
-import { Dropdown } from 'react-native-element-dropdown';
 import { Colors, GlobalStyle } from '../constants/theme';
 import LocationService from '../services/location.service';
 
@@ -17,8 +17,12 @@ const RegisterScreen = () => {
   const [cityId, setCityId] = useState(0);
   const [districtId, setDistrictId] = useState(0);
 
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [password, setPassword] = useState('');
+
+
   useEffect(() => {
-    FillProvinceDropdown();
+    // FillProvinceDropdown();
   }, []);
 
   const FillProvinceDropdown = async () => {
@@ -43,6 +47,7 @@ const RegisterScreen = () => {
       }));
       setProvinceId(provinceId)
       setCityArray(formatted);
+      setCityId(0);
       setDistrictArray([]);
     } catch (error) {
       console.error(error);
@@ -58,61 +63,72 @@ const RegisterScreen = () => {
       }));
       setCityId(cityId);
       setDistrictArray(formatted);
+      setDistrictId(0);
     } catch (error) {
       console.error(error);
     }
   };
 
-  const handleRegister = () => {
+  const HandlePreRegister = () => {
     // Lógica de registro aquí
     console.log('Registrando usuario...');
     // Por ahora, redirigimos al inicio
-    router.replace('/(tabs)/inicio'); 
+    router.replace('/(tabs)/inicio');
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
-        <KeyboardAvoidingView 
-            behavior={Platform.OS === "ios" ? "padding" : "height"} 
-            style={styles.container}
-        >
-            <ScrollView showsVerticalScrollIndicator={false}>
-                <View style={styles.header}>
-                    <Text style={styles.title}>Crear tu Cuenta</Text>
-                    <Text style={styles.subtitle}>Ingresa tus datos para empezar a explorar.</Text>
-                </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.container}
+      >
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View style={styles.header}>
+            <Text style={styles.title}>Crear tu Cuenta</Text>
+            <Text style={styles.subtitle}>Ingresa tus datos para empezar a explorar.</Text>
+          </View>
 
-                <View style={styles.form}>
+          <View style={styles.form}>
 
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Nombre completo"
-                    placeholderTextColor={Colors.light.icon}
-                    // value={email}
-                    // onChangeText={setEmail}
-                    autoCapitalize="none"
-                  />
-                  
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Correo electrónico"
-                    placeholderTextColor={Colors.light.icon}
-                    // value={email}
-                    // onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                  />
+            <TextInput
+              style={styles.input}
+              placeholder="Nombre completo"
+              placeholderTextColor={Colors.light.icon}
+              // value={email}
+              // onChangeText={setEmail}
+              autoCapitalize="none"
+            />
 
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Teléfono"
-                    placeholderTextColor={Colors.light.icon}
-                    // value={email}
-                    // onChangeText={setEmail}
-                    keyboardType="phone-pad"
-                  />
-                  
-                  <Dropdown
+            <TextInput
+              style={styles.input}
+              placeholder="Correo electrónico"
+              placeholderTextColor={Colors.light.icon}
+              // value={email}
+              // onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+
+            <View >
+              <TextInput
+                style={styles.input}
+                placeholder="Contraseña"
+                placeholderTextColor={Colors.light.icon}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!passwordVisible}
+              />
+
+              <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)} style={styles.toggle}>
+                <Text style={styles.toggleText}>
+                  {passwordVisible ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            
+            <PasswordStrength password={password} />
+
+            {/* <Dropdown
                     style={styles.input}
                     data={provinceArray}
                     labelField="label"
@@ -143,29 +159,29 @@ const RegisterScreen = () => {
                     value={districtId}
                     onChange={(item) => setDistrictId(item.value)}
                     placeholderStyle={{ color: Colors.light.icon }}
-                  />
+                  /> */}
 
-                </View>
+          </View>
 
-                <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-                    <Text style={styles.registerButtonText}>Continuar</Text>
-                </TouchableOpacity>
+          <TouchableOpacity style={styles.registerButton} onPress={HandlePreRegister}>
+            <Text style={styles.registerButtonText}>Continuar</Text>
+          </TouchableOpacity>
 
-                <View style={styles.loginPrompt}>
-                    <Text style={styles.loginPromptText}>¿Ya tienes una cuenta?</Text>
-                    <TouchableOpacity onPress={() => router.back()}>
-                        <Text style={styles.loginLink}>Inicia Sesión</Text>
-                    </TouchableOpacity>
-                </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+          <View style={styles.loginPrompt}>
+            <Text style={styles.loginPromptText}>¿Ya tienes una cuenta?</Text>
+            <TouchableOpacity onPress={() => router.back()}>
+              <Text style={styles.loginLink}>Inicia Sesión</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-  container: { 
+  container: {
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 24,
@@ -195,16 +211,16 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   input: {
-      width: '100%',
-      height: 50,
-      backgroundColor: '#FFFFFF',
-      borderRadius: GlobalStyle.BorderRadius,
-      paddingHorizontal: 16,
-      fontSize: 16,
-      marginBottom: 16,
-      borderWidth: 1,
-      borderColor: Colors.light.border
-    },
+    width: '100%',
+    height: 50,
+    backgroundColor: '#FFFFFF',
+    borderRadius: GlobalStyle.BorderRadius,
+    paddingHorizontal: 16,
+    fontSize: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: Colors.light.border
+  },
   registerButton: {
     width: '100%',
     height: 50,
@@ -236,17 +252,26 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 6,
   },
-    iconStyle: {
-      width: 20,
-      height: 20,
-    },
-    dropdown: {
-      height: 50,
-      borderColor: 'gray',
-      borderWidth: 0.5,
-      borderRadius: 8,
-      paddingHorizontal: 8,
-    },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  dropdown: {
+    height: 50,
+    borderColor: 'gray',
+    borderWidth: 0.5,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+  },
+  toggle: {
+    position: 'absolute',
+    right: 20,
+    top: 15,
+  },
+  toggleText: {
+    color: '#007bff',
+    fontWeight: '500',
+  },
 });
 
 export default RegisterScreen;
