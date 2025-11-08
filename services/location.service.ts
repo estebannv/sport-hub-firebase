@@ -1,8 +1,7 @@
-import Config from 'react-native-config';
 import { ApiResponse } from '../types/api-response.type';
 import { LocationType } from '../types/location.type';
 
-const api = `${Config.API_URL}/location`;
+const api = process.env.API_URL + 'location';
 
 const handleResponse = async <T>(response: Response): Promise<T> => {
 
