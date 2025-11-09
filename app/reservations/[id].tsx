@@ -1,9 +1,16 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const ReservationDetailsScreen = () => {
+
+  const router = useRouter();
+
   const { centerName, location, time, price } = useLocalSearchParams();
+
+  const HandlePreRegister = () => {
+    router.push('/login');
+  };
 
   return (
     <View style={styles.container}>
@@ -20,6 +27,10 @@ const ReservationDetailsScreen = () => {
         
         <TouchableOpacity style={styles.actionButton}>
           <Text style={styles.actionButtonText}>Calificar Servicio</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.actionButton} onPress={HandlePreRegister}>
+          <Text style={styles.actionButtonText}>login</Text>
         </TouchableOpacity>
       </View>
     </View>

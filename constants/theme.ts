@@ -5,29 +5,28 @@
 
 import { Platform } from 'react-native';
 
-const tintColorLight = '#ff1e00c2';
-const tintColorDark = '#fff';
+const mainColor = '#ff1e00c2';
 
 export const Colors = {
   light: {
     text: '#000000c9',
     background: '#fff',
-    tint: tintColorLight,
     icon: '#687076',
     tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
+    tabIconSelected: mainColor,
     border: '#D1D5DB',
-    secondaryButton: '#e6e6e6f3',
+    main: mainColor,
+    secondary: '#e6e6e6f3',
   },
   dark: {
     text: '#ECEDEE',
     background: '#151718',
-    tint: tintColorDark,
     icon: '#9BA1A6',
     tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
+    tabIconSelected: mainColor,
     border: '#4B5563',
-    secondaryButton: '#374151',
+    main: mainColor,
+    secondary: '#374151',
   },
 };
 
@@ -57,5 +56,9 @@ export const Fonts = Platform.select({
 });
 
 export const GlobalStyle = {
-  BorderRadius: 10
+  BorderRadius: 10,
+  PaddingHorizontal: 20,
+  TitleFontSize: 23,
+  LabelFontSize: 16,
+  ButtomTextFontSize: 16.5,
 };

@@ -1,7 +1,8 @@
 import PasswordStrength from '@/components/PasswordStrength';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, GlobalStyle } from '../constants/theme';
 import LocationService from '../services/location.service';
 
@@ -70,65 +71,58 @@ const RegisterScreen = () => {
   };
 
   const HandlePreRegister = () => {
-    // Lógica de registro aquí
-    console.log('Registrando usuario...');
-    // Por ahora, redirigimos al inicio
-    router.replace('/(tabs)/inicio');
+    router.push('/register-step-2');
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.container}
-      >
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.header}>
-            <Text style={styles.title}>Crear tu Cuenta</Text>
-            <Text style={styles.subtitle}>Ingresa tus datos para empezar a explorar.</Text>
+    <SafeAreaView style={styles.container}>
+      
+        <View style={styles.header}>
+          <Text style={styles.title}>Crear tu Cuenta</Text>
+          <Text style={styles.subtitle}>Ingresa tus datos para empezar a explorar.</Text>
+        </View>
+
+        <View style={styles.form}>
+
+          <TextInput
+            style={styles.input}
+            placeholder="Nombre completo"
+            placeholderTextColor={Colors.light.icon}
+            // value={email}
+            // onChangeText={setEmail}
+            autoCapitalize="none"
+          />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Correo electrónico"
+            placeholderTextColor={Colors.light.icon}
+            // value={email}
+            // onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+
+          <View >
+            <TextInput
+              style={styles.input}
+              placeholder="Contraseña"
+              placeholderTextColor={Colors.light.icon}
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!passwordVisible}
+            />
+
+            <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)} style={styles.toggle}>
+              <Text style={styles.toggleText}>
+                {passwordVisible ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+              </Text>
+            </TouchableOpacity>
           </View>
 
-          <View style={styles.form}>
+          <PasswordStrength password={password} />
 
-            <TextInput
-              style={styles.input}
-              placeholder="Nombre completo"
-              placeholderTextColor={Colors.light.icon}
-              // value={email}
-              // onChangeText={setEmail}
-              autoCapitalize="none"
-            />
-
-            <TextInput
-              style={styles.input}
-              placeholder="Correo electrónico"
-              placeholderTextColor={Colors.light.icon}
-              // value={email}
-              // onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-
-            <View >
-              <TextInput
-                style={styles.input}
-                placeholder="Contraseña"
-                placeholderTextColor={Colors.light.icon}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!passwordVisible}
-              />
-
-              <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)} style={styles.toggle}>
-                <Text style={styles.toggleText}>
-                  {passwordVisible ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-                </Text>
-              </TouchableOpacity>
-            </View>
-            
-            <PasswordStrength password={password} />
-
-            {/* <Dropdown
+          {/* <Dropdown
                     style={styles.input}
                     data={provinceArray}
                     labelField="label"
@@ -161,8 +155,9 @@ const RegisterScreen = () => {
                     placeholderStyle={{ color: Colors.light.icon }}
                   /> */}
 
-          </View>
+        </View>
 
+        <View style={styles.bottomSection}>
           <TouchableOpacity style={styles.registerButton} onPress={HandlePreRegister}>
             <Text style={styles.registerButtonText}>Continuar</Text>
           </TouchableOpacity>
@@ -173,23 +168,22 @@ const RegisterScreen = () => {
               <Text style={styles.loginLink}>Inicia Sesión</Text>
             </TouchableOpacity>
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+        </View>
+</SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
   container: {
     flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 24,
+    paddingTop: 20,
+    paddingHorizontal: 20,
+    backgroundColor: '#FFFFFF',
+    position: 'relative'
   },
   header: {
     alignItems: 'center',
     marginBottom: 32,
-    marginTop: 20,
   },
   title: {
     fontSize: 32,
@@ -222,13 +216,12 @@ const styles = StyleSheet.create({
     borderColor: Colors.light.border
   },
   registerButton: {
-    width: '100%',
     height: 50,
     backgroundColor: '#007AFF',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,
-    marginTop: 16,
+    marginBottom: 15,
   },
   registerButtonText: {
     color: 'white',
@@ -239,8 +232,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 24,
-    marginBottom: 20,
+    marginBottom: 25,
   },
   loginPromptText: {
     fontSize: 16,
@@ -271,6 +263,11 @@ const styles = StyleSheet.create({
   toggleText: {
     color: '#007bff',
     fontWeight: '500',
+  },
+  bottomSection: {
+    position: 'absolute',
+    bottom: 0,
+    width: '90%'
   },
 });
 

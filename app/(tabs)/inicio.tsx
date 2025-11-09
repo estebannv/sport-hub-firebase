@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, FlatList, TouchableOpacity, Image } from 'react-native';
-import { Link } from 'expo-router';
 import * as Location from 'expo-location';
+import { Link } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // --- DATOS DE EJEMPLO ---
 const sportsCategories = [
@@ -84,7 +85,16 @@ const HomeScreen = () => {
   }, []);
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <SafeAreaView style={styles.container}>
+
+      {/* 2. Barra de búsqueda (botón) */}
+      <Link href="/search" asChild>
+        <TouchableOpacity style={styles.searchBarContainer}>
+          <Text style={styles.searchIcon}>🔍</Text>
+          <Text style={styles.searchBarPlaceholder}>Buscar canchas, gimnasios...</Text>
+        </TouchableOpacity>
+      </Link>
+
       {/* 1. Barra superior de ubicación */}
       <View style={styles.topBar}>
         <TouchableOpacity style={styles.locationButton}>
@@ -100,13 +110,7 @@ const HomeScreen = () => {
         </View>
       </View>
 
-      {/* 2. Barra de búsqueda (botón) */}
-      <Link href="/search" asChild>
-        <TouchableOpacity style={styles.searchBarContainer}>
-          <Text style={styles.searchIcon}>🔍</Text>
-          <Text style={styles.searchBarPlaceholder}>Buscar canchas, gimnasios...</Text>
-        </TouchableOpacity>
-      </Link>
+      
 
       {/* 3. Categorías de deportes */}
       <FlatList
@@ -118,29 +122,44 @@ const HomeScreen = () => {
         contentContainerStyle={styles.categoriesList}
       />
 
-      {/* 4. Sección "Destacados" */}
-      <SectionHeader title="Destacados en tu zona" />
-      <FlatList
-        data={featuredCenters}
-        renderItem={({ item }) => <CenterCard item={item} />}
-        keyExtractor={(item) => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.centersList}
-      />
+    </SafeAreaView>
+    // <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      
 
-      {/* 5. Sección "Populares" */}
-      <SectionHeader title="Populares esta semana" />
-       <FlatList
-        data={popularCenters}
-        renderItem={({ item }) => <CenterCard item={item} />}
-        keyExtractor={(item) => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.centersList}
-      />
+    //   {/* 4. Sección "Destacados" */}
+    //   <SectionHeader title="Destacados en tu zona" />
+    //   <FlatList
+    //     data={featuredCenters}
+    //     renderItem={({ item }) => <CenterCard item={item} />}
+    //     keyExtractor={(item) => item.id}
+    //     horizontal
+    //     showsHorizontalScrollIndicator={false}
+    //     contentContainerStyle={styles.centersList}
+    //   />
 
-    </ScrollView>
+    //   {/* 5. Sección "Populares" */}
+    //   <SectionHeader title="Populares esta semana" />
+    //    <FlatList
+    //     data={popularCenters}
+    //     renderItem={({ item }) => <CenterCard item={item} />}
+    //     keyExtractor={(item) => item.id}
+    //     horizontal
+    //     showsHorizontalScrollIndicator={false}
+    //     contentContainerStyle={styles.centersList}
+    //   />
+
+    //   {/* 5. Sección "Populares" */}
+    //   <SectionHeader title="Populares esta semana" />
+    //    <FlatList
+    //     data={popularCenters}
+    //     renderItem={({ item }) => <CenterCard item={item} />}
+    //     keyExtractor={(item) => item.id}
+    //     horizontal
+    //     showsHorizontalScrollIndicator={false}
+    //     contentContainerStyle={styles.centersList}
+    //   />
+
+    // </ScrollView>
   );
 };
 
@@ -150,7 +169,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    paddingTop: 15,
+    paddingTop: 10,
   },
   topBar: {
     flexDirection: 'row',

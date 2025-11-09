@@ -1,9 +1,11 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, GlobalStyle } from '../constants/theme';
 
 const LoginScreen = () => {
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
@@ -13,92 +15,70 @@ const LoginScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === "ios" ? "padding" : "height"} 
-        style={styles.container}
-      >
+    
+    <SafeAreaView style={styles.container}>
+
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+
         <Text style={styles.title}>Iniciar sesión</Text>
 
-        <View>
-            <TextInput
-                style={styles.input}
-                placeholder="tu.correo@ejemplo.com"
-                placeholderTextColor={Colors.light.icon}
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-            />
-
-            <TextInput
-                style={styles.input}
-                placeholder="••••••••"
-                placeholderTextColor={Colors.light.icon}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-            />
-        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Correo electrónico"
+          placeholderTextColor={Colors.light.icon}
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Contraseña"
+          placeholderTextColor={Colors.light.icon}
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
 
         <View style={styles.registerSection}>
+
           <Text style={styles.registerSectionText}>¿No tienes una cuenta?</Text>
+          
           <TouchableOpacity onPress={() => router.push('/register-step-1')}>
             <Text style={styles.registerLink}>Registrarse</Text>
           </TouchableOpacity>
+
         </View>
 
-        <View>
-            <TouchableOpacity style={styles.primaryButton} onPress={handleLogin}>
-                <Text style={styles.primaryButtonText}>Continuar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.secondaryButton} onPress={handleLogin}>
-                <Text style={styles.secondaryButtonText}>Continuar con Google</Text>
-            </TouchableOpacity>
+        <View style={styles.footer}>
+
+          <TouchableOpacity style={styles.primaryButton} onPress={handleLogin}>
+
+            <Text style={styles.primaryButtonText}>Continuar</Text>
+
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.secondaryButton} onPress={handleLogin}>
+
+            <Text style={styles.secondaryButtonText}>Continuar con Google</Text>
+
+          </TouchableOpacity>
+
         </View>
 
       </KeyboardAvoidingView>
+
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: { 
-    flex: 1, 
-    backgroundColor: Colors.light.background 
-  },
+  //General
   container: {
     flex: 1,
-    justifyContent: 'flex-start',
-    paddingHorizontal: 24,
-  },
-  registerSection: {
-    flexDirection: 'row',
-    alignSelf: 'center',
-    paddingTop: 15,
-    paddingBottom: 35,
-  },
-  registerSectionText: {
-    fontSize: 16,
-    color: Colors.light.text,
-  },
-  registerLink: {
-    fontSize: 16,
-    color: Colors.light.tint,
-    fontWeight: 'bold',
-    marginLeft: 6,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: Colors.light.text,
-    marginVertical: 35,
-    alignSelf: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: Colors.light.text,
-    marginBottom: 25,
+    paddingHorizontal: GlobalStyle.PaddingHorizontal,
+    backgroundColor: Colors.light.background,
+    position: 'relative'
   },
   input: {
     width: '100%',
@@ -106,15 +86,48 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: GlobalStyle.BorderRadius,
     paddingHorizontal: 16,
-    fontSize: 16,
+    fontSize: GlobalStyle.LabelFontSize,
     marginBottom: 16,
     borderWidth: 1,
     borderColor: Colors.light.border
   },
-  primaryButton: {
+  //General
+  //Header
+  title: {
+    fontSize: GlobalStyle.TitleFontSize,
+    fontWeight: 'bold',
+    color: Colors.light.text,
+    marginVertical: 35,
+    alignSelf: 'center',
+  },
+  //Header
+  //Register
+  registerSection: {
+    flexDirection: 'row',
+    alignSelf: 'center',
+    paddingTop: 15,
+    paddingBottom: 30,
+  },
+  registerSectionText: {
+    fontSize: GlobalStyle.LabelFontSize,
+    color: Colors.light.text,
+  },
+  registerLink: {
+    fontSize: GlobalStyle.LabelFontSize,
+    color: Colors.light.main,
+    fontWeight: 'bold',
+    marginLeft: 6,
+  },
+  //Register
+  //Footer
+  footer:{
     width: '100%',
+    position: 'absolute',
+    bottom: 10
+  },
+  primaryButton: {
     height: 50,
-    backgroundColor: Colors.light.tint,
+    backgroundColor: Colors.light.main,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: GlobalStyle.BorderRadius,
@@ -122,22 +135,22 @@ const styles = StyleSheet.create({
   },
   primaryButtonText: {
     color: 'white',
-    fontSize: 16.5,
+    fontSize: GlobalStyle.ButtomTextFontSize,
     fontWeight: 'bold',
   },
   secondaryButton: {
-    width: '100%',
     height: 50,
-    backgroundColor: Colors.light.secondaryButton,
+    backgroundColor: Colors.light.secondary,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: GlobalStyle.BorderRadius,
   },
   secondaryButtonText: {
     color: Colors.light.text,
-    fontSize: 16.5,
+    fontSize: GlobalStyle.ButtomTextFontSize,
     fontWeight: 'bold',
   },
+  //Footer
 });
 
 export default LoginScreen;

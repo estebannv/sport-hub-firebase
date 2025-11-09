@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router'; // 1. Importar el router
 import React from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // --- COMPONENTE PARA UN ITEM DE LA LISTA DE OPCIONES ---
 const OptionItem = ({ icon, label, onPress }: { icon: string, label: string, onPress?: () => void }) => (
@@ -17,9 +18,9 @@ const AccountScreen = () => {
 
   // Datos de ejemplo para el perfil del usuario
   const user = {
-    name: 'Juan Pérez',
-    phone: '+1 (555) 123-4567',
-    email: 'juan.perez@email.com',
+    name: 'Esteban Navarro Martínez',
+    phone: '+506 8734-5453',
+    email: 'navarro.estn@gmail.com',
   };
 
   return (
@@ -32,7 +33,7 @@ const AccountScreen = () => {
           </View>
           <View style={styles.profileInfo}>
             <Text style={styles.profileName}>{user.name}</Text>
-            <Text style={styles.profileDetails}>{user.phone}</Text>
+            {/* <Text style={styles.profileDetails}>{user.phone}</Text> */}
             <Text style={styles.profileDetails}>{user.email}</Text>
           </View>
         </View>
