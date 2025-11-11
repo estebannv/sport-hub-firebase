@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors, GlobalStyle } from '../constants/theme';
+import { Colors, Fonts, GlobalStyle } from '../constants/theme';
 
 const LoginScreen = () => {
 
@@ -15,7 +15,7 @@ const LoginScreen = () => {
   };
 
   return (
-    
+
     <SafeAreaView style={styles.container}>
 
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
@@ -25,7 +25,7 @@ const LoginScreen = () => {
         <TextInput
           style={styles.input}
           placeholder="Correo electrónico"
-          placeholderTextColor={Colors.light.icon}
+          placeholderTextColor={Colors.light.placeholder}
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
@@ -34,7 +34,7 @@ const LoginScreen = () => {
         <TextInput
           style={styles.input}
           placeholder="Contraseña"
-          placeholderTextColor={Colors.light.icon}
+          placeholderTextColor={Colors.light.placeholder}
           value={password}
           onChangeText={setPassword}
           secureTextEntry
@@ -53,15 +53,11 @@ const LoginScreen = () => {
         <View style={styles.footer}>
 
           <TouchableOpacity style={styles.primaryButton} onPress={handleLogin}>
-
             <Text style={styles.primaryButtonText}>Continuar</Text>
-
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.secondaryButton} onPress={handleLogin}>
-
             <Text style={styles.secondaryButtonText}>Continuar con Google</Text>
-
           </TouchableOpacity>
 
         </View>
@@ -99,6 +95,7 @@ const styles = StyleSheet.create({
     color: Colors.light.text,
     marginVertical: 35,
     alignSelf: 'center',
+    // fontFamily: Fonts.serif
   },
   //Header
   //Register
@@ -111,6 +108,7 @@ const styles = StyleSheet.create({
   registerSectionText: {
     fontSize: GlobalStyle.LabelFontSize,
     color: Colors.light.text,
+    fontFamily: Fonts.sans
   },
   registerLink: {
     fontSize: GlobalStyle.LabelFontSize,

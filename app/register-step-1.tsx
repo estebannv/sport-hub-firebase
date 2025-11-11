@@ -1,128 +1,127 @@
 import PasswordStrength from '@/components/PasswordStrength';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, GlobalStyle } from '../constants/theme';
-import LocationService from '../services/location.service';
 
 const RegisterScreen = () => {
 
   const router = useRouter();
 
-  const [provinceArray, setProvinceArray] = useState<{ label: string; value: number }[]>([]);
-  const [cityArray, setCityArray] = useState<{ label: string; value: number }[]>([]);
-  const [districtArray, setDistrictArray] = useState<{ label: string; value: number }[]>([]);
+  // const [provinceArray, setProvinceArray] = useState<{ label: string; value: number }[]>([]);
+  // const [cityArray, setCityArray] = useState<{ label: string; value: number }[]>([]);
+  // const [districtArray, setDistrictArray] = useState<{ label: string; value: number }[]>([]);
 
-  const [provinceId, setProvinceId] = useState(0);
-  const [cityId, setCityId] = useState(0);
-  const [districtId, setDistrictId] = useState(0);
+  // const [provinceId, setProvinceId] = useState(0);
+  // const [cityId, setCityId] = useState(0);
+  // const [districtId, setDistrictId] = useState(0);
 
-  const [passwordVisible, setPasswordVisible] = useState(false);
   const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
+  // useEffect(() => {
+  // FillProvinceDropdown();
+  // }, []);
 
-  useEffect(() => {
-    // FillProvinceDropdown();
-  }, []);
+  // const FillProvinceDropdown = async () => {
+  //   try {
+  //     const data = await LocationService.GetProvinces();
+  //     const formatted = data.map((p) => ({
+  //       label: p.name,
+  //       value: p.id,
+  //     }));
+  //     setProvinceArray(formatted);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
-  const FillProvinceDropdown = async () => {
-    try {
-      const data = await LocationService.GetProvinces();
-      const formatted = data.map((p) => ({
-        label: p.name,
-        value: p.id,
-      }));
-      setProvinceArray(formatted);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const OnChangeProvinceDropdown = async (provinceId: number) => {
+  //   try {
+  //     const data = await LocationService.GetCities(provinceId);
+  //     const formatted = data.map((p) => ({
+  //       label: p.name,
+  //       value: p.id,
+  //     }));
+  //     setProvinceId(provinceId)
+  //     setCityArray(formatted);
+  //     setCityId(0);
+  //     setDistrictArray([]);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
-  const OnChangeProvinceDropdown = async (provinceId: number) => {
-    try {
-      const data = await LocationService.GetCities(provinceId);
-      const formatted = data.map((p) => ({
-        label: p.name,
-        value: p.id,
-      }));
-      setProvinceId(provinceId)
-      setCityArray(formatted);
-      setCityId(0);
-      setDistrictArray([]);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const OnChangeCityDropdown = async (cityId: number) => {
-    try {
-      const data = await LocationService.GetDistricts(provinceId, cityId);
-      const formatted = data.map((p) => ({
-        label: p.name,
-        value: p.id,
-      }));
-      setCityId(cityId);
-      setDistrictArray(formatted);
-      setDistrictId(0);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const OnChangeCityDropdown = async (cityId: number) => {
+  //   try {
+  //     const data = await LocationService.GetDistricts(provinceId, cityId);
+  //     const formatted = data.map((p) => ({
+  //       label: p.name,
+  //       value: p.id,
+  //     }));
+  //     setCityId(cityId);
+  //     setDistrictArray(formatted);
+  //     setDistrictId(0);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   const HandlePreRegister = () => {
     router.push('/register-step-2');
   };
 
   return (
+
     <SafeAreaView style={styles.container}>
-      
-        <View style={styles.header}>
-          <Text style={styles.title}>Crear tu Cuenta</Text>
-          <Text style={styles.subtitle}>Ingresa tus datos para empezar a explorar.</Text>
-        </View>
 
-        <View style={styles.form}>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Nombre completo"
-            placeholderTextColor={Colors.light.icon}
-            // value={email}
-            // onChangeText={setEmail}
-            autoCapitalize="none"
-          />
+      <Text style={styles.title}>Crea tu cuenta</Text>
+      <Text style={styles.subtitle}>Ingresa tus datos para empezar a explorar</Text>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Correo electrónico"
-            placeholderTextColor={Colors.light.icon}
-            // value={email}
-            // onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
+      <TextInput
+        style={styles.input}
+        placeholder="Nombre completo"
+        placeholderTextColor={Colors.light.placeholder}
+        value={fullName}
+        onChangeText={setFullName}
+      />
 
-          <View >
-            <TextInput
-              style={styles.input}
-              placeholder="Contraseña"
-              placeholderTextColor={Colors.light.icon}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={!passwordVisible}
-            />
+      <TextInput
+        style={styles.input}
+        placeholder="Correo electrónico"
+        placeholderTextColor={Colors.light.placeholder}
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+      />
 
-            <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)} style={styles.toggle}>
-              <Text style={styles.toggleText}>
-                {passwordVisible ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-              </Text>
-            </TouchableOpacity>
-          </View>
+      <View >
 
-          <PasswordStrength password={password} />
+        <TextInput
+          style={styles.input}
+          placeholder="Contraseña"
+          placeholderTextColor={Colors.light.placeholder}
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={!passwordVisible}
+        />
 
-          {/* <Dropdown
+        <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)} style={styles.passwordToggle}>
+          <Text style={styles.passwordToggleText}>
+            {passwordVisible ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+          </Text>
+        </TouchableOpacity>
+
+      </View>
+
+      <PasswordStrength password={password} />
+
+      {/* <Dropdown
                     style={styles.input}
                     data={provinceArray}
                     labelField="label"
@@ -155,72 +154,87 @@ const RegisterScreen = () => {
                     placeholderStyle={{ color: Colors.light.icon }}
                   /> */}
 
-        </View>
+      <View style={styles.bottomSection}>
 
-        <View style={styles.bottomSection}>
-          <TouchableOpacity style={styles.registerButton} onPress={HandlePreRegister}>
-            <Text style={styles.registerButtonText}>Continuar</Text>
+        <TouchableOpacity style={styles.registerButton} onPress={HandlePreRegister}>
+          <Text style={styles.registerButtonText}>Continuar</Text>
+        </TouchableOpacity>
+
+        <View style={styles.loginPrompt}>
+          <Text style={styles.loginPromptText}>¿Ya tienes una cuenta?</Text>
+          <TouchableOpacity onPress={() => router.push('/login')}>
+            <Text style={styles.loginLink}>Iniciar Sesión</Text>
           </TouchableOpacity>
-
-          <View style={styles.loginPrompt}>
-            <Text style={styles.loginPromptText}>¿Ya tienes una cuenta?</Text>
-            <TouchableOpacity onPress={() => router.back()}>
-              <Text style={styles.loginLink}>Inicia Sesión</Text>
-            </TouchableOpacity>
-          </View>
         </View>
-</SafeAreaView>
+
+      </View>
+
+      </KeyboardAvoidingView>
+      
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  //General
   container: {
     flex: 1,
-    paddingTop: 20,
-    paddingHorizontal: 20,
+    paddingHorizontal: GlobalStyle.PaddingHorizontal,
     backgroundColor: '#FFFFFF',
-    position: 'relative'
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#1E1E1E',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginTop: 8,
-  },
-  form: {
-    width: '100%',
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#1E1E1E',
-    marginBottom: 8,
+    // position: 'relative'
   },
   input: {
-    width: '100%',
     height: 50,
-    backgroundColor: '#FFFFFF',
     borderRadius: GlobalStyle.BorderRadius,
     paddingHorizontal: 16,
-    fontSize: 16,
+    fontSize: GlobalStyle.LabelFontSize,
     marginBottom: 16,
     borderWidth: 1,
     borderColor: Colors.light.border
   },
+  //General
+  //Header
+  title: {
+    fontSize: GlobalStyle.TitleFontSize,
+    fontWeight: 'bold',
+    color: Colors.light.text,
+    marginVertical: 15,
+    alignSelf: 'center',
+    // fontFamily: Fonts.serif
+  },
+  subtitle: {
+    fontSize: GlobalStyle.LabelFontSize,
+    color: Colors.light.text,
+    marginBottom: 20,
+    alignSelf: 'center',
+  },
+  //Header
+  //Password toggle
+  passwordToggle: {
+    position: 'absolute',
+    right: 0,
+    // backgroundColor: '#2723ecff',
+    height: 50,
+    justifyContent: 'center',
+    paddingRight: 15
+  },
+  passwordToggleText: {
+    color: Colors.light.main,
+    fontWeight: '500',
+  },
+  //Password toggle
+  //Footer
+  bottomSection: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%'
+  },
   registerButton: {
     height: 50,
-    backgroundColor: '#007AFF',
+    backgroundColor: Colors.light.main,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 8,
+    borderRadius: GlobalStyle.BorderRadius,
     marginBottom: 15,
   },
   registerButtonText: {
@@ -235,40 +249,23 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
   loginPromptText: {
-    fontSize: 16,
-    color: '#666',
+    fontSize: GlobalStyle.LabelFontSize,
+    color: Colors.light.text,
   },
   loginLink: {
-    fontSize: 16,
-    color: '#007AFF',
+    fontSize: GlobalStyle.LabelFontSize,
+    color: Colors.light.main,
     fontWeight: 'bold',
     marginLeft: 6,
   },
-  iconStyle: {
-    width: 20,
-    height: 20,
-  },
-  dropdown: {
-    height: 50,
-    borderColor: 'gray',
-    borderWidth: 0.5,
-    borderRadius: 8,
-    paddingHorizontal: 8,
-  },
-  toggle: {
-    position: 'absolute',
-    right: 20,
-    top: 15,
-  },
-  toggleText: {
-    color: '#007bff',
-    fontWeight: '500',
-  },
-  bottomSection: {
-    position: 'absolute',
-    bottom: 0,
-    width: '90%'
-  },
+  //Footer
+  // dropdown: {
+  //   height: 50,
+  //   borderColor: 'gray',
+  //   borderWidth: 0.5,
+  //   borderRadius: 8,
+  //   paddingHorizontal: 8,
+  // },
 });
 
 export default RegisterScreen;

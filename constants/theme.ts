@@ -5,13 +5,14 @@
 
 import { Platform } from 'react-native';
 
-const mainColor = '#ff1e00c2';
+// const mainColor = '#ff1e00c2';
+const mainColor = '#f00914c2';
 
 export const Colors = {
   light: {
     text: '#000000c9',
     background: '#fff',
-    icon: '#687076',
+    placeholder: '#687076',
     tabIconDefault: '#687076',
     tabIconSelected: mainColor,
     border: '#D1D5DB',
@@ -21,7 +22,7 @@ export const Colors = {
   dark: {
     text: '#ECEDEE',
     background: '#151718',
-    icon: '#9BA1A6',
+    placeholder: '#9BA1A6',
     tabIconDefault: '#9BA1A6',
     tabIconSelected: mainColor,
     border: '#4B5563',
