@@ -7,13 +7,14 @@ type PasswordStrengthProps = {
 };
 
 const PasswordStrength = ({ password = '' }: PasswordStrengthProps) => {
+  
   const requirements = [
     {
-      text: 'Al menos 8 caracteres',
+      text: '8 caracteres mínimo',
       met: password.length >= 8,
     },
     {
-      text: 'Una letra mayúscula y una minúscula',
+      text: 'Mayúscula y minúsculas',
       met: /[a-z]/.test(password) && /[A-Z]/.test(password),
     },
     {
@@ -21,7 +22,7 @@ const PasswordStrength = ({ password = '' }: PasswordStrengthProps) => {
       met: (password.match(/\d/g) || []).length >= 4,
     },
     {
-      text: 'Al menos 1 carácter especial',
+      text: 'Caracteres especiales (!@#$%^&*(),.?":{}|<>)',
       met: /[!@#$%^&*(),.?":{}|<>]/.test(password),
     },
   ];
@@ -45,15 +46,13 @@ const PasswordRequirement = ({ met, text, password }: { met: boolean; text: stri
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 10,
+    paddingTop: 5,
   },
   requirementContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
     marginBottom: 5,
   },
   requirementText: {
-    fontSize: 14,
+    fontSize: 14.5,
   },
 });
 
