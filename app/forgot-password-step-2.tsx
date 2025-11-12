@@ -1,20 +1,37 @@
+import OTPInput from '@/components/OtpInput';
 import PasswordStrength from '@/components/PasswordStrength';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, GlobalStyle } from '../constants/theme';
 
 const ForgotPasswordStep2 = () => {
 
-  const [otp, setOtp] = useState('');
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [timer, setTimer] = useState(30);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const router = useRouter();
 
+  useEffect(() => {
+          const interval = setInterval(() => {
+              setTimer((prevTimer) => (prevTimer > 0 ? prevTimer - 1 : 0));
+          }, 1000);
+          return () => clearInterval(interval);
+      }, []);
+
   const handleContinue = () => {
     router.push('/login');
   };
+
+  const handleChange = (text: string, index: number) => {
+    const newOtp = [...otp];
+    newOtp[index] = text;
+    setOtp(newOtp);
+};
+
+const handleResend = () => setTimer(30);
 
   return (
 
@@ -24,14 +41,12 @@ const ForgotPasswordStep2 = () => {
 
         <Text style={styles.title}>Restablecer contraseña</Text>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Código OTP"
-          placeholderTextColor={Colors.light.placeholder}
-          value={otp}
-          onChangeText={setOtp}
-          keyboardType="number-pad"
-        />
+        <OTPInput 
+                otp={otp}
+                timer={timer}
+                handleChange={handleChange}
+                handleResend={handleResend}
+            />
         
         <TextInput
           style={styles.input}

@@ -1,7 +1,8 @@
+import OTPInput from '@/components/OtpInput';
 import { Colors, GlobalStyle } from '@/constants/theme';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const OTPScreen = () => {
@@ -41,25 +42,12 @@ const OTPScreen = () => {
             <Text style={styles.title}>Verifica tu correo electrónico</Text>
             <Text style={styles.subtitle}>Hemos enviado un código a navarro@gmail.com </Text>
 
-            <View style={styles.otpContainer}>
-                {otp.map((digit, index) => (
-                    <TextInput
-                        key={index}
-                        style={styles.otpInput}
-                        keyboardType="number-pad"
-                        maxLength={1}
-                        onChangeText={(text) => handleChange(text, index)}
-                        value={digit}
-                    />
-                ))}
-            </View>
-
-            <TouchableOpacity onPress={handleResend} disabled={timer > 0}>
-                {timer > 0 ?
-                    <Text style={[styles.resendText, styles.resendTextDisabled]}>{`Reenviar código en ${timer}s`}</Text> :
-                    <Text style={[styles.resendText, styles.resendTextEnabled]}>{`Reenviar código`}</Text>
-                }
-            </TouchableOpacity>
+            <OTPInput 
+                otp={otp}
+                timer={timer}
+                handleChange={handleChange}
+                handleResend={handleResend}
+            />
 
             <View style={styles.bottomSection}>
 
