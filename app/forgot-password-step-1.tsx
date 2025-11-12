@@ -4,14 +4,13 @@ import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableO
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Fonts, GlobalStyle } from '../constants/theme';
 
-const LoginScreen = () => {
+const ForgotPasswordStep1 = () => {
 
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const router = useRouter();
 
-  const handleLogin = () => {
-    router.replace('/(tabs)/inicio');
+  const handleContinue = () => {
+    router.push('/forgot-password-step-2');
   };
 
   return (
@@ -20,7 +19,7 @@ const LoginScreen = () => {
 
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
 
-        <Text style={styles.title}>Iniciar sesión</Text>
+        <Text style={styles.title}>Recuperar contraseña</Text>
 
         <TextInput
           style={styles.input}
@@ -31,37 +30,11 @@ const LoginScreen = () => {
           keyboardType="email-address"
           autoCapitalize="none"
         />
-        <TextInput
-          style={styles.input}
-          placeholder="Contraseña"
-          placeholderTextColor={Colors.light.placeholder}
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
-
-        <TouchableOpacity onPress={() => router.push('/forgot-password-step-1')}>
-          <Text style={styles.forgotPassword}>¿Olvidó su contraseña?</Text>
-        </TouchableOpacity>
-
-        <View style={styles.registerSection}>
-
-          <Text style={styles.registerSectionText}>¿No tienes una cuenta?</Text>
-          
-          <TouchableOpacity onPress={() => router.push('/register-step-1')}>
-            <Text style={styles.registerLink}>Registrarse</Text>
-          </TouchableOpacity>
-
-        </View>
 
         <View style={styles.footer}>
 
-          <TouchableOpacity style={styles.primaryButton} onPress={handleLogin}>
+          <TouchableOpacity style={styles.primaryButton} onPress={handleContinue}>
             <Text style={styles.primaryButtonText}>Continuar</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.secondaryButton} onPress={handleLogin}>
-            <Text style={styles.secondaryButtonText}>Continuar con Google</Text>
           </TouchableOpacity>
 
         </View>
@@ -102,34 +75,6 @@ const styles = StyleSheet.create({
     // fontFamily: Fonts.serif
   },
   //Header
-  //Forgot Password
-  forgotPassword: {
-    fontSize: GlobalStyle.LabelFontSize,
-    color: Colors.light.main,
-    fontWeight: 'bold',
-    marginLeft: 6,
-    textAlign: 'right',
-    paddingBottom: 15,
-  },
-  //Register
-  registerSection: {
-    flexDirection: 'row',
-    alignSelf: 'center',
-    paddingTop: 15,
-    paddingBottom: 30,
-  },
-  registerSectionText: {
-    fontSize: GlobalStyle.LabelFontSize,
-    color: Colors.light.text,
-    fontFamily: Fonts.sans
-  },
-  registerLink: {
-    fontSize: GlobalStyle.LabelFontSize,
-    color: Colors.light.main,
-    fontWeight: 'bold',
-    marginLeft: 6,
-  },
-  //Register
   //Footer
   footer:{
     width: '100%',
@@ -149,19 +94,7 @@ const styles = StyleSheet.create({
     fontSize: GlobalStyle.ButtomTextFontSize,
     fontWeight: 'bold',
   },
-  secondaryButton: {
-    height: 50,
-    backgroundColor: Colors.light.secondary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: GlobalStyle.BorderRadius,
-  },
-  secondaryButtonText: {
-    color: Colors.light.text,
-    fontSize: GlobalStyle.ButtomTextFontSize,
-    fontWeight: 'bold',
-  },
   //Footer
 });
 
-export default LoginScreen;
+export default ForgotPasswordStep1;
