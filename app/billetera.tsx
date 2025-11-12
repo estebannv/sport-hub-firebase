@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
@@ -39,12 +40,12 @@ const BilleteraScreen = () => {
       <Stack.Screen options={{ title: 'Billetera' }} />
       <ScrollView style={styles.container}>
         <Text style={styles.sectionTitle}>Métodos de pago</Text>
-        
+
         {MOCK_PAYMENT_METHODS.map(method => (
           <PaymentMethodCard key={method.id} method={method} />
         ))}
 
-        <TouchableOpacity style={styles.addButton} onPress={() => console.log('Navegar a pantalla de agregar método')}>
+        <TouchableOpacity style={styles.addButton} onPress={() => router.push('/add-card')}>
           <Text style={styles.addButtonText}>+ Agregar nuevo método de pago</Text>
         </TouchableOpacity>
       </ScrollView>

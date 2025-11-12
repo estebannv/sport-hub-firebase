@@ -1,7 +1,7 @@
 import PasswordStrength from '@/components/PasswordStrength';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, GlobalStyle } from '../constants/theme';
 
@@ -80,7 +80,7 @@ const RegisterScreen = () => {
 
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
 
-        <ScrollView style={{ flex: 1 }}>
+        {/* <ScrollView style={{ flex: 1 }}> */}
 
       <Text style={styles.title}>Crea tu cuenta</Text>
       <Text style={styles.subtitle}>Ingresa tus datos para empezar a explorar</Text>
@@ -171,7 +171,7 @@ const RegisterScreen = () => {
 
       </View>
 
-      </ScrollView>
+      {/* </ScrollView> */}
 
       </KeyboardAvoidingView>
       
