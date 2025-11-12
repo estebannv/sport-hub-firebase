@@ -185,7 +185,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: GlobalStyle.PaddingHorizontal,
     backgroundColor: '#FFFFFF',
-    // position: 'relative'
   },
   input: {
     height: 50,

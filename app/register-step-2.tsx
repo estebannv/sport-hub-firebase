@@ -1,13 +1,13 @@
 import { Colors, GlobalStyle } from '@/constants/theme';
 import { router } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const OTPScreen = () => {
 
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [timer, setTimer] = useState(30);
-    const inputs = useRef<Array<TextInput | null>>([]);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -20,33 +20,26 @@ const OTPScreen = () => {
         const newOtp = [...otp];
         newOtp[index] = text;
         setOtp(newOtp);
-
-        if (text.length === 1 && index < 5) {
-            inputs.current[index + 1]?.focus();
-        }
-    };
-
-    const handleKeyPress = ({ nativeEvent: { key } }: { nativeEvent: { key: string } }, index: number) => {
-        if (key === 'Backspace' && otp[index] === '' && index > 0) {
-            inputs.current[index - 1]?.focus();
-        }
     };
 
     const handleResend = () => setTimer(30);
 
     const handleSubmit = () => {
+        
         const otpCode = otp.join('');
         console.log('OTP Submitted:', otpCode);
-        // Add logic to verify OTP
+        
         router.replace('/(tabs)/inicio');
     };
 
     return (
 
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
+
+            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
 
             <Text style={styles.title}>Verifica tu correo electrónico</Text>
-            <Text style={styles.subtitle}>Hemos enviado un código a navarro.estn@gmail.com </Text>
+            <Text style={styles.subtitle}>Hemos enviado un código a navarro@gmail.com </Text>
 
             <View style={styles.otpContainer}>
                 {otp.map((digit, index) => (
@@ -56,56 +49,64 @@ const OTPScreen = () => {
                         keyboardType="number-pad"
                         maxLength={1}
                         onChangeText={(text) => handleChange(text, index)}
-                        onKeyPress={(e) => handleKeyPress(e, index)}
                         value={digit}
-                    // ref={(ref) => (inputs.current[index] = ref)}
                     />
                 ))}
             </View>
 
             <TouchableOpacity onPress={handleResend} disabled={timer > 0}>
-                <Text style={styles.resendText}>
-                    {timer > 0 ? `Reenviar código en ${timer}s` : 'Reenviar código'}
-                </Text>
+                {timer > 0 ?
+                    <Text style={[styles.resendText, styles.resendTextDisabled]}>{`Reenviar código en ${timer}s`}</Text> :
+                    <Text style={[styles.resendText, styles.resendTextEnabled]}>{`Reenviar código`}</Text>
+                }
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.registerButton} onPress={handleSubmit}>
-                <Text style={styles.registerButtonText}>Verificar</Text>
-            </TouchableOpacity>
+            <View style={styles.bottomSection}>
 
-        </View>
+                <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                    <Text style={styles.buttonText}>Continuar</Text>
+                </TouchableOpacity>
+
+            </View>
+
+            </KeyboardAvoidingView>
+
+        </SafeAreaView>
+
+
     );
 };
 
 const styles = StyleSheet.create({
+    //General
     container: {
         flex: 1,
-        alignItems: 'center',
-        // padding: 20,
-        position: 'relative',
+        paddingHorizontal: GlobalStyle.PaddingHorizontal,
         backgroundColor: '#FFFFFF',
-    },
+      },
+    //General
+    //Header
     title: {
-        fontSize: 24,
+        fontSize: GlobalStyle.TitleFontSize,
         fontWeight: 'bold',
-        marginVertical: 20,
+        color: Colors.light.text,
+        marginVertical: 15,
+        // alignSelf: 'center',
     },
     subtitle: {
-        fontSize: 16,
-        textAlign: 'center',
-        // color: '#666',
+        fontSize: GlobalStyle.LabelFontSize,
+        color: Colors.light.text,
         marginBottom: 20,
+        alignSelf: 'center',
     },
-    timer: {
-        fontSize: 18,
-        color: Colors.light.tint,
-        marginBottom: 20,
-    },
+    //Header
+    //OTP Section
     otpContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        width: '85%',
+        width: '90%',
         marginBottom: 20,
+        alignSelf: 'center',
     },
     otpInput: {
         width: 45,
@@ -120,23 +121,35 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 16,
         marginBottom: 20,
-        color: '#007AFF',
+        alignSelf: 'center'
     },
-    registerButton: {
-        width: '85%',
+    resendTextEnabled: {
+        color: Colors.light.main,
+    },
+    resendTextDisabled: {
+        color: Colors.light.placeholder,
+    },
+    //OTP Section
+    //Footer
+    bottomSection: {
+        position: 'absolute',
+        bottom: 0,
+        width: '100%'
+      },
+      button: {
         height: 50,
-        backgroundColor: '#007AFF',
+        backgroundColor: Colors.light.main,
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: GlobalStyle.BorderRadius,
-        position: 'absolute',
-        bottom: 30
-    },
-    registerButtonText: {
+        marginBottom: 15,
+      },
+      buttonText: {
         color: 'white',
         fontSize: 18,
         fontWeight: 'bold',
-    },
+      },
+    //Footer
 });
 
 export default OTPScreen;
