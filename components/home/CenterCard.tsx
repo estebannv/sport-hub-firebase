@@ -1,4 +1,5 @@
 
+import { GlobalStyle } from '@/constants/theme';
 import { Link } from 'expo-router';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -9,7 +10,7 @@ export const CenterCard = ({ item }: { item: { id: string, name: string, rating:
       <Image source={{ uri: item.image }} style={styles.centerImage} />
       <View style={styles.centerInfo}>
         <Text style={styles.centerName}>{item.name}</Text>
-        <Text style={styles.centerDetails}>⭐️ {item.rating} ({item.reviews}+) • {item.deliveryTime} min</Text>
+        <Text style={styles.centerDetails}>⭐️ {item.rating} • Fútbol, Basketball, Tennis, Pádel • 5.5 km</Text>
       </View>
     </TouchableOpacity>
   </Link>
@@ -20,10 +21,11 @@ const styles = StyleSheet.create({
     width: 280,
     marginRight: 16,
     backgroundColor: 'white',
-    borderRadius: 10,
+    borderRadius: GlobalStyle.BorderRadius,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: '#e0e0e0',
+    marginBottom: 20
   },
   centerImage: {
     width: '100%',

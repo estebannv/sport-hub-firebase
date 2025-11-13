@@ -16,12 +16,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 0,
     width: 70,
+    marginBottom: 20,
   },
   categoryIconContainer: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    // backgroundColor: '#f0f0f0',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,

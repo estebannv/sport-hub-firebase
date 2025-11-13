@@ -30,7 +30,7 @@ const OTPScreen = () => {
         const otpCode = otp.join('');
         console.log('OTP Submitted:', otpCode);
         
-        router.replace('/(tabs)/inicio');
+        router.replace('/(tabs)/home');
     };
 
     return (

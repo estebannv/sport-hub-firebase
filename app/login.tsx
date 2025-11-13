@@ -11,7 +11,7 @@ const LoginScreen = () => {
   const router = useRouter();
 
   const handleLogin = () => {
-    router.replace('/(tabs)/inicio');
+    router.replace('/(tabs)/home');
   };
 
   return (
@@ -48,7 +48,7 @@ const LoginScreen = () => {
 
           <Text style={styles.registerSectionText}>¿No tienes una cuenta?</Text>
           
-          <TouchableOpacity onPress={() => router.push('/register-step-1')}>
+          <TouchableOpacity onPress={() => router.push('/registration/step-1')}>
             <Text style={styles.registerLink}>Registrarse</Text>
           </TouchableOpacity>
 

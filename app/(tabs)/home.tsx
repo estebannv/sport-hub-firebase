@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { CategoryItem } from '../../components/home/CategoryItem';
 import { CenterCard } from '../../components/home/CenterCard';
+import { SectionHeader } from '../../components/home/SectionHeader';
+import { GlobalStyle } from '../../constants/theme';
 
 const sportsCategories = [
   { id: '1', name: 'Fútbol', icon: '⚽' },
@@ -19,60 +21,54 @@ const featuredCenters = [
   { id: '2', name: 'Gimnasio Rock Solid', rating: 4.7, reviews: 230, deliveryTime: 20, image: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=500&q=80' },
 ];
 
-const SectionHeader = ({ title }: { title: string }) => (
-  <View style={styles.sectionHeader}>
-    <Text style={styles.sectionTitle}>{title}</Text>
-    <TouchableOpacity>
-      <Text style={styles.sectionArrow}>→</Text>
-    </TouchableOpacity>
-  </View>
-);
-
-// --- PANTALLA PRINCIPAL ---
 const HomeScreen = () => {
+
   const [address, setAddress] = useState('Buscando ubicación...');
 
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setAddress('Permiso de ubicación denegado');
-        return;
-      }
+  const GetCurrentPosition = async () => {
 
-      try {
-        let location = await Location.getCurrentPositionAsync({});
-        let geocode = await Location.reverseGeocodeAsync(location.coords);
-        
-        if (geocode && geocode.length > 0) {
-          const { street, city } = geocode[0];
-          setAddress(`${street}, ${city}`);
-        } else {
-          setAddress('Dirección no encontrada');
-        }
-      } catch (error) {
-        setAddress('No se pudo obtener la ubicación');
+    let { status } = await Location.requestForegroundPermissionsAsync();
+
+    if (status !== 'granted') {
+      setAddress('Permiso de ubicación denegado');
+      return;
+    }
+
+    try {
+      let location = await Location.getCurrentPositionAsync({});
+      let geocode = await Location.reverseGeocodeAsync(location.coords);
+
+      if (geocode && geocode.length > 0) {
+        const { street, city } = geocode[0];
+        setAddress(`${street}, ${city}`);
+      } else {
+        setAddress('Dirección no encontrada');
       }
-    })();
+    } catch (error) {
+      setAddress('No se pudo obtener la ubicación');
+    }
+  }
+
+  useEffect(() => {
+    GetCurrentPosition();
   }, []);
 
   return (
+
     <ScrollView style={styles.container}>
 
-      {/* 1. Barra superior de ubicación */}
       <View style={styles.topBar}>
-        <TouchableOpacity style={styles.locationButton}>
-        <Text style={styles.locationText}>Ubicación actual</Text>
-          <Text style={styles.locationText} numberOfLines={1}>{address} ▼</Text>
+        <TouchableOpacity>
+          <Text style={styles.locationTextLabel}>Ubicación:</Text>
+          <Text style={styles.locationText} numberOfLines={1}>{address}</Text>
         </TouchableOpacity>
-        <View style={styles.topIcons}>
+        <View>
           <TouchableOpacity>
             <Text style={styles.topIcon}>🔔</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* 2. Barra de búsqueda (botón) */}
       <Link href="/search" asChild>
         <TouchableOpacity style={styles.searchBarContainer}>
           <Text style={styles.searchIcon}>🔍</Text>
@@ -80,17 +76,14 @@ const HomeScreen = () => {
         </TouchableOpacity>
       </Link>
 
-      {/* 3. Categorías de deportes */}
       <FlatList
         data={sportsCategories}
         renderItem={({ item }) => <CategoryItem item={item} />}
         keyExtractor={(item) => item.id}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.categoriesList}
       />
 
-      {/* 4. Sección "Destacados" */}
       <SectionHeader title="Destacados en tu zona" />
       <FlatList
         data={featuredCenters}
@@ -98,7 +91,7 @@ const HomeScreen = () => {
         keyExtractor={(item) => item.id}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.centersList}
+        contentContainerStyle={styles.featuredCenters}
       />
 
     </ScrollView>
@@ -106,75 +99,57 @@ const HomeScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  //General
   container: {
     flex: 1,
     backgroundColor: 'white',
-    paddingTop: 10,
+    paddingTop: 15
   },
+  //General
+  //Top bar
   topBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    marginBottom: 10,
+    marginBottom: 15,
+    marginHorizontal: GlobalStyle.PaddingHorizontal,
   },
-  locationButton: {
-    flex: 1,
+  locationTextLabel: {
+    fontSize: 14,
   },
   locationText: {
-    fontSize: 18,
+    fontSize: GlobalStyle.LabelFontSize,
     fontWeight: 'bold',
-  },
-  topIcons: {
-    flexDirection: 'row',
   },
   topIcon: {
     fontSize: 24,
-    marginLeft: 16,
   },
+  //Top bar
+  //Search bar
   searchBarContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#f0f0f0',
-    borderRadius: 30,
-    marginHorizontal: 16,
+    borderRadius: 25,
     paddingHorizontal: 16,
     height: 50,
-    marginBottom: 20,
+    marginBottom: 5,
+    marginHorizontal: GlobalStyle.PaddingHorizontal,
   },
   searchIcon: {
     fontSize: 20,
     marginRight: 10,
   },
   searchBarPlaceholder: {
-    fontSize: 16,
+    fontSize: GlobalStyle.LabelFontSize,
     color: '#8e8e93',
   },
-  categoriesList: {
-    paddingHorizontal: 10,
-    marginBottom: 20,
+  //Search bar
+  //Categories list
+  featuredCenters: {
+    marginLeft: GlobalStyle.PaddingHorizontal,
   },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    marginBottom: 10,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  sectionArrow: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#007AFF',
-  },
-  centersList: {
-    paddingLeft: 16,
-    paddingRight: 8,
-    marginBottom: 20,
-  },
+  //Categories list
 });
 
 export default HomeScreen;

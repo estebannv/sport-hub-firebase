@@ -158,6 +158,14 @@ const RegisterScreen = () => {
 
       <View style={styles.bottomSection}>
 
+      <View style={styles.loginPrompt}>
+          <Text style={[styles.loginPromptText, {textAlign: 'center'}]}>
+            Al registrarse, aceptas nuestros 
+            <Text style={{ color: Colors.light.main, fontWeight: 'bold' }} onPress={() => router.push('/login')}> términos y condiciones</Text>
+          </Text>
+            
+        </View>
+
         <TouchableOpacity style={styles.registerButton} onPress={HandlePreRegister}>
           <Text style={styles.registerButtonText}>Continuar</Text>
         </TouchableOpacity>
@@ -238,7 +246,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: GlobalStyle.BorderRadius,
-    marginBottom: 15,
+    marginBottom: 25,
   },
   registerButtonText: {
     color: 'white',
