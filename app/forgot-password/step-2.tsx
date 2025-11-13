@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors, GlobalStyle } from '../constants/theme';
+import { Colors, GlobalStyle } from '../../constants/theme';
 
 const ForgotPasswordStep2 = () => {
 

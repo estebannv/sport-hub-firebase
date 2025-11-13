@@ -1,10 +1,10 @@
 import * as Location from 'expo-location';
 import { Link } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { CategoryItem } from '../../components/home/CategoryItem';
+import { CenterCard } from '../../components/home/CenterCard';
 
-// --- DATOS DE EJEMPLO ---
 const sportsCategories = [
   { id: '1', name: 'Fútbol', icon: '⚽' },
   { id: '2', name: 'Basket', icon: '🏀' },
@@ -18,34 +18,6 @@ const featuredCenters = [
   { id: '1', name: 'Super Padel Center', rating: 4.9, reviews: 500, deliveryTime: 15, image: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=500&q=80' },
   { id: '2', name: 'Gimnasio Rock Solid', rating: 4.7, reviews: 230, deliveryTime: 20, image: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=500&q=80' },
 ];
-
-const popularCenters = [
-  { id: '3', name: 'Estadio de Fútbol Local', rating: 4.8, reviews: 800, deliveryTime: 30, image: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=500&q=80' },
-  { id: '4', name: 'Club de Tenis Abierto', rating: 4.6, reviews: 150, deliveryTime: 25, image: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=500&q=80' },
-];
-
-// --- COMPONENTES DE LA PANTALLA ---
-const CategoryItem = ({ item }: { item: { name: string, icon: string } }) => (
-  <TouchableOpacity style={styles.categoryItem}>
-    <View style={styles.categoryIconContainer}>
-      <Text style={styles.categoryIcon}>{item.icon}</Text>
-    </View>
-    <Text style={styles.categoryName}>{item.name}</Text>
-  </TouchableOpacity>
-);
-
-// MODIFICADO: CenterCard ahora es un enlace
-const CenterCard = ({ item }: { item: { id: string, name: string, rating: number, reviews: number, deliveryTime: number, image: string } }) => (
-  <Link href={`/center/${item.id}`} asChild>
-    <TouchableOpacity style={styles.centerCard}>
-      <Image source={{ uri: item.image }} style={styles.centerImage} />
-      <View style={styles.centerInfo}>
-        <Text style={styles.centerName}>{item.name}</Text>
-        <Text style={styles.centerDetails}>⭐️ {item.rating} ({item.reviews}+) • {item.deliveryTime} min</Text>
-      </View>
-    </TouchableOpacity>
-  </Link>
-);
 
 const SectionHeader = ({ title }: { title: string }) => (
   <View style={styles.sectionHeader}>
@@ -85,32 +57,28 @@ const HomeScreen = () => {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
-
-      {/* 2. Barra de búsqueda (botón) */}
-      <Link href="/search" asChild>
-        <TouchableOpacity style={styles.searchBarContainer}>
-          <Text style={styles.searchIcon}>🔍</Text>
-          <Text style={styles.searchBarPlaceholder}>Buscar canchas, gimnasios...</Text>
-        </TouchableOpacity>
-      </Link>
+    <ScrollView style={styles.container}>
 
       {/* 1. Barra superior de ubicación */}
       <View style={styles.topBar}>
         <TouchableOpacity style={styles.locationButton}>
+        <Text style={styles.locationText}>Ubicación actual</Text>
           <Text style={styles.locationText} numberOfLines={1}>{address} ▼</Text>
         </TouchableOpacity>
         <View style={styles.topIcons}>
           <TouchableOpacity>
             <Text style={styles.topIcon}>🔔</Text>
           </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={styles.topIcon}>🛒</Text>
-          </TouchableOpacity>
         </View>
       </View>
 
-      
+      {/* 2. Barra de búsqueda (botón) */}
+      <Link href="/search" asChild>
+        <TouchableOpacity style={styles.searchBarContainer}>
+          <Text style={styles.searchIcon}>🔍</Text>
+          <Text style={styles.searchBarPlaceholder}>Buscar canchas, centros deportivos...</Text>
+        </TouchableOpacity>
+      </Link>
 
       {/* 3. Categorías de deportes */}
       <FlatList
@@ -122,48 +90,20 @@ const HomeScreen = () => {
         contentContainerStyle={styles.categoriesList}
       />
 
-    </SafeAreaView>
-    // <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      
+      {/* 4. Sección "Destacados" */}
+      <SectionHeader title="Destacados en tu zona" />
+      <FlatList
+        data={featuredCenters}
+        renderItem={({ item }) => <CenterCard item={item} />}
+        keyExtractor={(item) => item.id}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.centersList}
+      />
 
-    //   {/* 4. Sección "Destacados" */}
-    //   <SectionHeader title="Destacados en tu zona" />
-    //   <FlatList
-    //     data={featuredCenters}
-    //     renderItem={({ item }) => <CenterCard item={item} />}
-    //     keyExtractor={(item) => item.id}
-    //     horizontal
-    //     showsHorizontalScrollIndicator={false}
-    //     contentContainerStyle={styles.centersList}
-    //   />
-
-    //   {/* 5. Sección "Populares" */}
-    //   <SectionHeader title="Populares esta semana" />
-    //    <FlatList
-    //     data={popularCenters}
-    //     renderItem={({ item }) => <CenterCard item={item} />}
-    //     keyExtractor={(item) => item.id}
-    //     horizontal
-    //     showsHorizontalScrollIndicator={false}
-    //     contentContainerStyle={styles.centersList}
-    //   />
-
-    //   {/* 5. Sección "Populares" */}
-    //   <SectionHeader title="Populares esta semana" />
-    //    <FlatList
-    //     data={popularCenters}
-    //     renderItem={({ item }) => <CenterCard item={item} />}
-    //     keyExtractor={(item) => item.id}
-    //     horizontal
-    //     showsHorizontalScrollIndicator={false}
-    //     contentContainerStyle={styles.centersList}
-    //   />
-
-    // </ScrollView>
+    </ScrollView>
   );
 };
-
-// --- ESTILOS (sin cambios) ---
 
 const styles = StyleSheet.create({
   container: {
@@ -211,30 +151,8 @@ const styles = StyleSheet.create({
     color: '#8e8e93',
   },
   categoriesList: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 10,
     marginBottom: 20,
-  },
-  categoryItem: {
-    alignItems: 'center',
-    marginRight: 20,
-    width: 70,
-  },
-  categoryIconContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#f0f0f0',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  categoryIcon: {
-    fontSize: 28,
-  },
-  categoryName: {
-    fontSize: 12,
-    fontWeight: '500',
-    textAlign: 'center',
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -256,31 +174,6 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     paddingRight: 8,
     marginBottom: 20,
-  },
-  centerCard: {
-    width: 280,
-    marginRight: 16,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-  },
-  centerImage: {
-    width: '100%',
-    height: 140,
-  },
-  centerInfo: {
-    padding: 12,
-  },
-  centerName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  centerDetails: {
-    fontSize: 13,
-    color: '#666',
   },
 });
 

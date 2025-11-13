@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors, Fonts, GlobalStyle } from '../constants/theme';
+import { Colors, Fonts, GlobalStyle } from '../../constants/theme';
 
 const ForgotPasswordStep1 = () => {
 
@@ -10,7 +10,7 @@ const ForgotPasswordStep1 = () => {
   const router = useRouter();
 
   const handleContinue = () => {
-    router.push('/forgot-password-step-2');
+    router.push('/forgot-password/step-2');
   };
 
   return (
