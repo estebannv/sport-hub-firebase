@@ -1,11 +1,25 @@
+
+import Ionicons from '@expo/vector-icons/Ionicons';
 import * as Location from 'expo-location';
 import { Link } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { CategoryItem } from '../../components/home/CategoryItem';
-import { CenterCard } from '../../components/home/CenterCard';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Card } from '../../components/home/Card';
+import { CategoryCarousel } from '../../components/home/CategoryCarousel';
 import { SectionHeader } from '../../components/home/SectionHeader';
 import { GlobalStyle } from '../../constants/theme';
+
+const Hr = () => (
+  <View
+    style={{
+      height: 1,
+      backgroundColor: '#e0e0e0',
+      width: '100%',
+      marginVertical: 12,
+    }}
+  />
+);
 
 const sportsCategories = [
   { id: '1', name: 'Fútbol', icon: '⚽' },
@@ -14,6 +28,12 @@ const sportsCategories = [
   { id: '4', name: 'Pádel', icon: '🏸' },
   { id: '5', name: 'Gym', icon: '🏋️' },
   { id: '6', name: 'Boxeo', icon: '🥊' },
+  { id: '7', name: 'Fútbol', icon: '⚽' },
+  { id: '8', name: 'Basket', icon: '🏀' },
+  { id: '9', name: 'Tenis', icon: '🎾' },
+  { id: '10', name: 'Pádel', icon: '🏸' },
+  { id: '11', name: 'Gym', icon: '🏋️' },
+  { id: '12', name: 'Boxeo', icon: '🥊' },
 ];
 
 const featuredCenters = [
@@ -39,8 +59,8 @@ const HomeScreen = () => {
       let geocode = await Location.reverseGeocodeAsync(location.coords);
 
       if (geocode && geocode.length > 0) {
-        const { street, city } = geocode[0];
-        setAddress(`${street}, ${city}`);
+        const { city } = geocode[0];
+        setAddress(`${city}`);
       } else {
         setAddress('Dirección no encontrada');
       }
@@ -55,16 +75,15 @@ const HomeScreen = () => {
 
   return (
 
+    <SafeAreaView style={styles.container}>
     <ScrollView style={styles.container}>
-
       <View style={styles.topBar}>
         <TouchableOpacity>
-          <Text style={styles.locationTextLabel}>Ubicación:</Text>
           <Text style={styles.locationText} numberOfLines={1}>{address}</Text>
         </TouchableOpacity>
         <View>
           <TouchableOpacity>
-            <Text style={styles.topIcon}>🔔</Text>
+            <Ionicons name="notifications" size={24} color="black" />
           </TouchableOpacity>
         </View>
       </View>
@@ -78,7 +97,7 @@ const HomeScreen = () => {
 
       <FlatList
         data={sportsCategories}
-        renderItem={({ item }) => <CategoryItem item={item} />}
+        renderItem={({ item }) => <CategoryCarousel item={item} />}
         keyExtractor={(item) => item.id}
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -87,7 +106,19 @@ const HomeScreen = () => {
       <SectionHeader title="Destacados en tu zona" />
       <FlatList
         data={featuredCenters}
-        renderItem={({ item }) => <CenterCard item={item} />}
+        renderItem={({ item }) => <Card item={item} />}
+        keyExtractor={(item) => item.id}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.featuredCenters}
+      />
+
+      <Hr />
+
+      <SectionHeader title="Destacados en tu zona" />
+      <FlatList
+        data={featuredCenters}
+        renderItem={({ item }) => <Card item={item} />}
         keyExtractor={(item) => item.id}
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -95,6 +126,7 @@ const HomeScreen = () => {
       />
 
     </ScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -103,7 +135,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    paddingTop: 15
+    paddingTop: 5
   },
   //General
   //Top bar
@@ -113,9 +145,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 15,
     marginHorizontal: GlobalStyle.PaddingHorizontal,
-  },
-  locationTextLabel: {
-    fontSize: 14,
   },
   locationText: {
     fontSize: GlobalStyle.LabelFontSize,
@@ -133,7 +162,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     paddingHorizontal: 16,
     height: 50,
-    marginBottom: 5,
+    marginBottom: 15,
     marginHorizontal: GlobalStyle.PaddingHorizontal,
   },
   searchIcon: {

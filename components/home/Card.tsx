@@ -4,7 +4,7 @@ import { Link } from 'expo-router';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export const CenterCard = ({ item }: { item: { id: string, name: string, rating: number, reviews: number, deliveryTime: number, image: string } }) => (
+export const Card = ({ item }: { item: { id: string, name: string, rating: number, reviews: number, deliveryTime: number, image: string } }) => (
   <Link href={`/center/${item.id}`} asChild>
     <TouchableOpacity style={styles.centerCard}>
       <Image source={{ uri: item.image }} style={styles.centerImage} />
@@ -18,18 +18,13 @@ export const CenterCard = ({ item }: { item: { id: string, name: string, rating:
 
 const styles = StyleSheet.create({
   centerCard: {
-    width: 280,
+    width: 250,
     marginRight: 16,
-    backgroundColor: 'white',
-    borderRadius: GlobalStyle.BorderRadius,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    marginBottom: 20
   },
   centerImage: {
     width: '100%',
     height: 140,
+    borderRadius: GlobalStyle.BorderRadius,
   },
   centerInfo: {
     padding: 12,

@@ -20,7 +20,7 @@ export const SectionHeader = ({ title }: { title: string }) => (
       marginHorizontal: GlobalStyle.PaddingHorizontal,
     },
     sectionTitle: {
-      fontSize: 20,
+      fontSize: 18,
       fontWeight: 'bold',
     },
     sectionArrow: {
