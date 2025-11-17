@@ -1,6 +1,7 @@
-
+import LocationService from '@/services/location.service';
+import Entypo from '@expo/vector-icons/Entypo';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import * as Location from 'expo-location';
 import { Link } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -8,7 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from '../../components/home/Card';
 import { CategoryCarousel } from '../../components/home/CategoryCarousel';
 import { SectionHeader } from '../../components/home/SectionHeader';
-import { GlobalStyle } from '../../constants/theme';
+import { Colors, GlobalStyle } from '../../constants/theme';
 
 const Hr = () => (
   <View
@@ -39,93 +40,115 @@ const sportsCategories = [
 const featuredCenters = [
   { id: '1', name: 'Super Padel Center', rating: 4.9, reviews: 500, deliveryTime: 15, image: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=500&q=80' },
   { id: '2', name: 'Gimnasio Rock Solid', rating: 4.7, reviews: 230, deliveryTime: 20, image: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=500&q=80' },
+  { id: '3', name: 'Gimnasio Rock Solid', rating: 4.7, reviews: 230, deliveryTime: 20, image: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=500&q=80' },
 ];
 
 const HomeScreen = () => {
 
-  const [address, setAddress] = useState('Buscando ubicación...');
+  const [city, setCity] = useState('Buscando ubicación...');
+  const [country, setCountry] = useState('');
 
-  const GetCurrentPosition = async () => {
+  const LoadLocation = async () => {
 
-    let { status } = await Location.requestForegroundPermissionsAsync();
+    const result = await LocationService.GetCurrentPosition();
 
-    if (status !== 'granted') {
-      setAddress('Permiso de ubicación denegado');
-      return;
+    if (result) {
+      setCity(result.city || 'Ubicación no encontrada');
+      setCountry(result.country || '');
     }
 
-    try {
-      let location = await Location.getCurrentPositionAsync({});
-      let geocode = await Location.reverseGeocodeAsync(location.coords);
-
-      if (geocode && geocode.length > 0) {
-        const { city } = geocode[0];
-        setAddress(`${city}`);
-      } else {
-        setAddress('Dirección no encontrada');
-      }
-    } catch (error) {
-      setAddress('No se pudo obtener la ubicación');
-    }
-  }
+  };
 
   useEffect(() => {
-    GetCurrentPosition();
+    LoadLocation();
   }, []);
 
   return (
 
     <SafeAreaView style={styles.container}>
-    <ScrollView style={styles.container}>
-      <View style={styles.topBar}>
-        <TouchableOpacity>
-          <Text style={styles.locationText} numberOfLines={1}>{address}</Text>
-        </TouchableOpacity>
-        <View>
-          <TouchableOpacity>
-            <Ionicons name="notifications" size={24} color="black" />
+
+      <ScrollView stickyHeaderIndices={[1]}>
+
+        <View style={styles.topBar}>
+          <Link href="/home" asChild>
+            <Text style={styles.topBarTitle}>SportHub</Text>
+          </Link>
+          <TouchableOpacity style={styles.topBarLocationContainer}>
+            <FontAwesome6 style={styles.topBarIcon} name="location-dot" color={Colors.light.main} />
+            <View>
+              <Text style={styles.topBarLocationDetail}>{city}</Text>
+              {country != '' ? <Text style={styles.topBarLocationDetailBottom}>{country}</Text> : null}
+            </View>
+            <Entypo name="chevron-small-down" size={24} color="black" />
           </TouchableOpacity>
         </View>
-      </View>
 
-      <Link href="/search" asChild>
-        <TouchableOpacity style={styles.searchBarContainer}>
-          <Text style={styles.searchIcon}>🔍</Text>
-          <Text style={styles.searchBarPlaceholder}>Buscar canchas, centros deportivos...</Text>
-        </TouchableOpacity>
-      </Link>
+        <Link href="/search" asChild>
+          <View style={styles.searchBarBackground}>
+            <View style={styles.searchBarContainer}>
+              <Ionicons style={styles.searchIcon} name="search-sharp" size={24} color="black" />
+              <Text style={styles.searchBarPlaceholder}>Buscar canchas, centros deportivos...</Text>
+            </View>
+          </View>
 
-      <FlatList
-        data={sportsCategories}
-        renderItem={({ item }) => <CategoryCarousel item={item} />}
-        keyExtractor={(item) => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-      />
+        </Link>
 
-      <SectionHeader title="Destacados en tu zona" />
-      <FlatList
-        data={featuredCenters}
-        renderItem={({ item }) => <Card item={item} />}
-        keyExtractor={(item) => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.featuredCenters}
-      />
+        <FlatList
+          data={sportsCategories}
+          renderItem={({ item }) => <CategoryCarousel item={item} />}
+          keyExtractor={(item) => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+        />
 
-      <Hr />
+        <SectionHeader title="Destacados en tu zona" />
+        <FlatList
+          data={featuredCenters}
+          renderItem={({ item }) => <Card item={item} />}
+          keyExtractor={(item) => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.featuredCenters}
+        />
 
-      <SectionHeader title="Destacados en tu zona" />
-      <FlatList
-        data={featuredCenters}
-        renderItem={({ item }) => <Card item={item} />}
-        keyExtractor={(item) => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.featuredCenters}
-      />
+        <Hr />
 
-    </ScrollView>
+        <SectionHeader title="Destacados en tu zona" />
+        <FlatList
+          data={featuredCenters}
+          renderItem={({ item }) => <Card item={item} />}
+          keyExtractor={(item) => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.featuredCenters}
+        />
+
+        <Hr />
+
+        <SectionHeader title="Destacados en tu zona" />
+        <FlatList
+          data={featuredCenters}
+          renderItem={({ item }) => <Card item={item} />}
+          keyExtractor={(item) => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.featuredCenters}
+        />
+
+        <Hr />
+
+        <SectionHeader title="Destacados en tu zona" />
+        <FlatList
+          data={featuredCenters}
+          renderItem={({ item }) => <Card item={item} />}
+          keyExtractor={(item) => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.featuredCenters}
+        />
+
+      </ScrollView>
+
     </SafeAreaView>
   );
 };
@@ -135,7 +158,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    paddingTop: 5
   },
   //General
   //Top bar
@@ -143,18 +165,36 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 15,
     marginHorizontal: GlobalStyle.PaddingHorizontal,
   },
-  locationText: {
+  topBarTitle: {
     fontSize: GlobalStyle.LabelFontSize,
     fontWeight: 'bold',
   },
-  topIcon: {
-    fontSize: 24,
+  topBarLocationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end'
+  },
+  topBarLocationDetail: {
+    fontSize: 15,
+    fontWeight: '600',
+    maxWidth: 80
+  },
+  topBarLocationDetailBottom: {
+    fontSize: 13,
+    fontWeight: '400',
+  },
+  topBarIcon: {
+    fontSize: 22,
+    marginRight: 10,
   },
   //Top bar
   //Search bar
+  searchBarBackground: {
+    backgroundColor: 'white',
+    paddingVertical: 10,
+  },
   searchBarContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -162,11 +202,10 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     paddingHorizontal: 16,
     height: 50,
-    marginBottom: 15,
     marginHorizontal: GlobalStyle.PaddingHorizontal,
   },
   searchIcon: {
-    fontSize: 20,
+    fontSize: 21.5,
     marginRight: 10,
   },
   searchBarPlaceholder: {

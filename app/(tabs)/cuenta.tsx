@@ -1,3 +1,4 @@
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useRouter } from 'expo-router'; // 1. Importar el router
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -6,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 // --- COMPONENTE PARA UN ITEM DE LA LISTA DE OPCIONES ---
 const OptionItem = ({ icon, label, onPress }: { icon: string, label: string, onPress?: () => void }) => (
   <TouchableOpacity style={styles.optionItem} onPress={onPress}>
-    <Text style={styles.optionIcon}>{icon}</Text>
+    <FontAwesome6 style={styles.optionIcon} name={icon} size={24} color="black" />
     <Text style={styles.optionLabel}>{label}</Text>
     <Text style={styles.optionArrow}>›</Text>
   </TouchableOpacity>
@@ -41,9 +42,10 @@ const AccountScreen = () => {
         {/* 2. Lista de Opciones */}
         <View style={styles.optionsGroup}>
           {/* 3. Añadir el evento onPress para navegar */}
-          <OptionItem icon="💳" label="Billetera" onPress={() => router.push('/billetera')} />
-          <OptionItem icon="📍" label="Configuración de ubicación" />
-          <OptionItem icon="🎨" label="Apariencia" />
+          
+          <OptionItem icon="wallet" label="Métodos de pago" onPress={() => router.push('/billetera')} />
+            <OptionItem icon="location-dot" label="Ubicaciones guardadas" onPress={() => router.push('/billetera')} />
+              <OptionItem icon="palette" label="Apariencia" onPress={() => router.push('/billetera')} />
         </View>
 
         {/* 3. Botón de Cerrar Sesión */}

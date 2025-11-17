@@ -3,27 +3,27 @@ import { GlobalStyle } from '@/constants/theme';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export const SectionHeader = ({ title }: { title: string }) => (
-    <View style={styles.sectionHeader}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>{title}</Text>
       <TouchableOpacity>
-        <Text style={styles.sectionArrow}>→</Text>
+        <Text style={styles.arrow}>→</Text>
       </TouchableOpacity>
     </View>
   );
 
   const styles = StyleSheet.create({
-    sectionHeader: {
+    container: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
       marginBottom: 15,
       marginHorizontal: GlobalStyle.PaddingHorizontal,
     },
-    sectionTitle: {
+    title: {
       fontSize: 18,
       fontWeight: 'bold',
     },
-    sectionArrow: {
+    arrow: {
       fontSize: 20,
       fontWeight: 'bold',
       color: '#007AFF',
