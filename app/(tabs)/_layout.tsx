@@ -10,14 +10,16 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
+        tabBarStyle: {
+          borderTopWidth: 0,
+          shadowColor: "#000",
+          shadowOpacity: 0.1,
+          shadowRadius: 10,
+        },
         tabBarActiveTintColor: Colors.light.main,
         headerShown: false,
         tabBarButton: HapticTab,
       }}>
-      <Tabs.Screen
-        name="index"
-        options={{ href: null }}
-      />
       <Tabs.Screen
         name="home"
         options={{
@@ -26,7 +28,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="actividad"
+        name="activity"
         options={{
           title: 'Actividad',
           tabBarIcon: ({ color }) => <MaterialCommunityIcons name="invoice-list" size={24} color={color} />,

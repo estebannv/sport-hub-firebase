@@ -6,7 +6,7 @@
 import { Platform } from 'react-native';
 
 // const mainColor = '#ff1e00c2';
-const mainColor = '#f00914c2';
+const mainColor = '#ec3a43ff';
 
 export const Colors = {
   light: {
@@ -59,7 +59,7 @@ export const Fonts = Platform.select({
 export const GlobalStyle = {
   BorderRadius: 10,
   PaddingHorizontal: 16,
-  TitleFontSize: 23,
+  TitleFontSize: 35,
   LabelFontSize: 16,
   ButtomTextFontSize: 16.5,
 };

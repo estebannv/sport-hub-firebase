@@ -3,24 +3,13 @@ import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Link } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from '../../components/home/Card';
 import { CategoryCarousel } from '../../components/home/CategoryCarousel';
-import { SectionHeader } from '../../components/home/SectionHeader';
 import { Colors, GlobalStyle } from '../../constants/theme';
-
-const Hr = () => (
-  <View
-    style={{
-      height: 1,
-      backgroundColor: '#e0e0e0',
-      width: '100%',
-      marginVertical: 12,
-    }}
-  />
-);
 
 const sportsCategories = [
   { id: '1', name: 'Fútbol', icon: '⚽' },
@@ -67,6 +56,8 @@ const HomeScreen = () => {
 
     <SafeAreaView style={styles.container}>
 
+      <StatusBar style='dark'/>
+
       <ScrollView stickyHeaderIndices={[1]}>
 
         <View style={styles.topBar}>
@@ -77,7 +68,7 @@ const HomeScreen = () => {
             <FontAwesome6 style={styles.topBarIcon} name="location-dot" color={Colors.light.main} />
             <View>
               <Text style={styles.topBarLocationDetail}>{city}</Text>
-              {country != '' ? <Text style={styles.topBarLocationDetailBottom}>{country}</Text> : null}
+              {/* {country != '' ? <Text style={styles.topBarLocationDetailBottom}>{country}</Text> : null} */}
             </View>
             <Entypo name="chevron-small-down" size={24} color="black" />
           </TouchableOpacity>
@@ -99,9 +90,10 @@ const HomeScreen = () => {
           keyExtractor={(item) => item.id}
           horizontal
           showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.featuredCategories}
         />
 
-        <SectionHeader title="Destacados en tu zona" />
+        <Text style={styles.sectionTitle}>Destacados en tu zona</Text>
         <FlatList
           data={featuredCenters}
           renderItem={({ item }) => <Card item={item} />}
@@ -111,9 +103,7 @@ const HomeScreen = () => {
           contentContainerStyle={styles.featuredCenters}
         />
 
-        <Hr />
-
-        <SectionHeader title="Destacados en tu zona" />
+        <Text style={styles.sectionTitle}>Destacados en tu zona</Text>
         <FlatList
           data={featuredCenters}
           renderItem={({ item }) => <Card item={item} />}
@@ -123,9 +113,7 @@ const HomeScreen = () => {
           contentContainerStyle={styles.featuredCenters}
         />
 
-        <Hr />
-
-        <SectionHeader title="Destacados en tu zona" />
+        <Text style={styles.sectionTitle}>Destacados en tu zona</Text>
         <FlatList
           data={featuredCenters}
           renderItem={({ item }) => <Card item={item} />}
@@ -135,9 +123,7 @@ const HomeScreen = () => {
           contentContainerStyle={styles.featuredCenters}
         />
 
-        <Hr />
-
-        <SectionHeader title="Destacados en tu zona" />
+        <Text style={styles.sectionTitle}>Destacados en tu zona</Text>
         <FlatList
           data={featuredCenters}
           renderItem={({ item }) => <Card item={item} />}
@@ -166,6 +152,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginHorizontal: GlobalStyle.PaddingHorizontal,
+    marginVertical: 7
   },
   topBarTitle: {
     fontSize: GlobalStyle.LabelFontSize,
@@ -179,7 +166,7 @@ const styles = StyleSheet.create({
   topBarLocationDetail: {
     fontSize: 15,
     fontWeight: '600',
-    maxWidth: 80
+    maxWidth: 90
   },
   topBarLocationDetailBottom: {
     fontSize: 13,
@@ -215,9 +202,20 @@ const styles = StyleSheet.create({
   //Search bar
   //Categories list
   featuredCenters: {
-    marginLeft: GlobalStyle.PaddingHorizontal,
+    paddingLeft: GlobalStyle.PaddingHorizontal,
+    backgroundColor: 'white'
+  },
+  featuredCategories: {
+    backgroundColor: 'white'
   },
   //Categories list
+  sectionTitle: {
+      fontSize: 19,
+      fontWeight: '700',
+      paddingHorizontal: GlobalStyle.PaddingHorizontal,
+      paddingBottom: 12,
+      backgroundColor: 'white'
+    },
 });
 
 export default HomeScreen;
