@@ -1,6 +1,6 @@
 import { GlobalStyle } from '@/constants/theme';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link } from 'expo-router';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -38,10 +38,12 @@ const reservationsData = [
   },
 ];
 
-const ReservationCard = ({ item }: { item: any }) => (
-  <View>
-    <Link href={{ pathname: `/reservations/${item.id}`, params: { ...item } }} asChild>
-      <TouchableOpacity>
+const ReservationCard = ({ item }: { item: any }) => {
+  const router = useRouter();
+
+  return (
+    <View>
+      <TouchableOpacity onPress={() => router.push({ pathname: `/reservations/${item.id}`, params: { ...item } })}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardIcon}>⚽</Text>
           <View>
@@ -52,11 +54,10 @@ const ReservationCard = ({ item }: { item: any }) => (
           </View>
         </View>
       </TouchableOpacity>
-    </Link>
-    <View style={styles.hr}></View>
-  </View>
-
-);
+      <View style={styles.hr}></View>
+    </View>
+  )
+};
 
 const ActivityScreen = () => {
   return (
