@@ -1,6 +1,7 @@
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, SafeAreaView } from 'react-native';
-import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // --- DATOS DE EJEMPLO ACTUALIZADOS ---
 const MOCK_CENTERS_DATA = {

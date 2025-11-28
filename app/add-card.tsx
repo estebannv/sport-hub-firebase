@@ -1,8 +1,9 @@
 
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView, Alert } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
-import { GlobalStyle, Colors } from '../constants/theme';
+import React, { useState } from 'react';
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Colors } from '../constants/theme';
 
 const AddCardScreen = () => {
   const router = useRouter();
