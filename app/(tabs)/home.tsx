@@ -81,7 +81,6 @@ const HomeScreen = () => {
               <Text style={styles.searchBarPlaceholder}>Buscar canchas, centros deportivos...</Text>
             </View>
           </View>
-
         </Link>
 
         <FlatList

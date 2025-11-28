@@ -17,7 +17,6 @@ export default function BottomHalfModal() {
       >
         <View style={styles.modalContent}>
           <Text style={{ fontSize: 18, fontWeight: "bold" }}>Bottom Half</Text>
-          <Text>Este modal aparece desde abajo ocupando la mitad.</Text>
         </View>
       </Modal>
     </View>
@@ -25,20 +24,20 @@ export default function BottomHalfModal() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modal: {
-    justifyContent: "flex-end", // 👈 Lo empuja hacia abajo
-    margin: 0,                  // 👈 Sin margen alrededor
-  },
-  modalContent: {
-    height: "50%",              // 👈 Mitad de pantalla
-    backgroundColor: "white",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
-  },
+  // container: {
+  //   flex: 1,
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  // },
+  // modal: {
+  //   justifyContent: "flex-end",
+  //   margin: 0, 
+  // },
+  // modalContent: {
+  //   height: "50%",
+  //   backgroundColor: "white",
+  //   borderTopLeftRadius: 20,
+  //   borderTopRightRadius: 20,
+  //   padding: 20,
+  // },
 });

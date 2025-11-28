@@ -1,7 +1,9 @@
-import { GlobalStyle } from '@/constants/theme';
+import { Colors, GlobalStyle } from '@/constants/theme';
+import Feather from '@expo/vector-icons/Feather';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Modal from 'react-native-modal';
+import Modal from "react-native-modal";
 
 interface Reservation {
   id: string;
@@ -12,67 +14,88 @@ interface Reservation {
   price: string;
   status: 'upcoming' | 'past';
   image?: string;
+  category?: string;
 }
 
 export const ReservationCard = ({ item }: { item: Reservation }) => {
-    
-  const [visible, setVisible] = useState(false);
 
-  const handleOpen = () => setVisible(true);
-  const handleClose = () => setVisible(false);
+  const [isModalVisible, setModalVisible] = useState(false);
 
   return (
+
     <View>
-      <TouchableOpacity onPress={handleOpen}>
+
+      <TouchableOpacity onPress={() => setModalVisible(true)}>
+
         <View style={styles.cardHeader}>
+
           <Text style={styles.cardIcon}>⚽</Text>
 
           <View>
             <Text style={styles.cardTitle}>{item.centerName}</Text>
             <Text style={styles.cardDetail}>{item.date} • {item.time}</Text>
-            <Text style={styles.cardDetail}>{item.location}</Text>
             <Text style={styles.cardDetail}>{item.price}</Text>
           </View>
+
         </View>
+
       </TouchableOpacity>
 
       <View style={styles.hr} />
 
       <Modal
-  isVisible={visible}
->
-    <View style={styles.modalStyle}>
-      <View style={styles.modalCard}>
+        isVisible={isModalVisible}
+        onBackdropPress={() => setModalVisible(false)}
+        style={styles.modal}
+      >
+        <View style={styles.modalContent}>
 
-        <Text style={styles.centerName}>{item.centerName}</Text>
-        <Text style={styles.detailText}>Ubicación: {item.location}</Text>
-        <Text style={styles.detailText}>Hora: {item.time}</Text>
-        <Text style={styles.priceText}>Precio: {item.price}</Text>
+          <View style={styles.modalTopBar}>
+            <TouchableOpacity style={styles.modalTopBarIcon} onPress={() => setModalVisible(false)}>
+              <Feather name="arrow-left" size={24} color="black" />
+            </TouchableOpacity>
+            <Text style={styles.modalTopBarTitle}></Text>
+          </View>
 
-        <ActionButton label="Ver Recibo" onPress={() => {}} />
-        <ActionButton label="Calificar Servicio" onPress={() => {}} />
-        <ActionButton label="Login" onPress={() => {}} />
+          <View style={{marginBottom: 15}}>
+            <Text style={styles.modalTextTitle}>Detalles de la reservación</Text>
+            <Text style={styles.modalTextDetail}>{item.date} • {item.time}</Text>
+            <Text style={styles.modalTextDetail}>{item.centerName}</Text>
+            <Text style={styles.modalTextDetail}>Categoría: {item.category}</Text>
+            <Text style={styles.modalTextDetail}>{item.price}</Text>
+          </View>
 
-      </View>
-    </View>
-</Modal>
+          <TouchableOpacity style={styles.primaryButton}>
+            <FontAwesome5 name="receipt" size={24} color="black" />
+            <Text style={styles.primaryButtonText}>Generar recibo</Text>
+          </TouchableOpacity>
 
-      
+          {/* <TouchableOpacity style={styles.primaryButton} onPress={() => router.push('/modal')}>
+            <Text style={styles.primaryButtonText}>Generar factura</Text>
+          </TouchableOpacity> */}
+
+        </View>
+
+      </Modal>
+
     </View>
   );
 };
 
-const ActionButton = ({ label, onPress }: { label: string; onPress: () => void }) => (
-  <TouchableOpacity style={styles.actionButton} onPress={onPress}>
-    <Text style={styles.actionButtonText}>{label}</Text>
-  </TouchableOpacity>
-);
-
 const styles = StyleSheet.create({
+  //General
   cardHeader: {
     flexDirection: 'row',
-    gap: 25,
+    justifyContent: 'flex-start',
+    gap: 20,
   },
+  hr: {
+    height: 0.5,
+    backgroundColor: '#e2e2e2',
+    marginVertical: 15,
+  },
+  //General
+  //Card
   cardIcon: {
     fontSize: 35,
     alignSelf: 'center',
@@ -81,76 +104,60 @@ const styles = StyleSheet.create({
     borderRadius: GlobalStyle.BorderRadius,
   },
   cardTitle: {
-    fontSize: 18,
+    fontSize: GlobalStyle.LabelFontSize,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 5,
   },
   cardDetail: {
     color: '#333',
     marginBottom: 4,
   },
-  hr: {
-    height: 1,
-    backgroundColor: '#e2e2e2',
-    marginVertical: 15,
+  //Card
+  //Modal
+  modal: {
+    justifyContent: "flex-end",
+    margin: 0,
   },
-  modalStyfle:{
-    backgroundColor: 'white',
-    // margin: 20,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    paddingTop: 20,
-    paddingHorizontal: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-    // flex: 1,
-    // justifyContent: 'flex-end'
+  modalContent: {
+    backgroundColor: "white",
+    padding: GlobalStyle.PaddingHorizontal,
   },
-overlay: {
-  flex: 1,
-  backgroundColor: "rgba(255, 0, 0, 1)",
-  justifyContent: "flex-end"
-},
-  modalContainer: {
-    flex: 1,
-    // backgroundColor: 'white',
-    // paddingHorizontal: GlobalStyle.PaddingHorizontal,
-    justifyContent: 'flex-end',
+  modalTopBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10
   },
-  // modalCard: {
-  //   padding: 20,
-  //   borderRadius: 10,
-  //   backgroundColor: '#fafafa',
-  // },
-  // centerName: {
-  //   fontSize: 22,
-  //   fontWeight: 'bold',
-  //   marginBottom: 12,
-  // },
-  // detailText: {
-  //   fontSize: 16,
-  //   marginBottom: 6,
-  // },
-  // priceText: {
-  //   fontSize: 18,
-  //   fontWeight: '600',
-  //   marginVertical: 12,
-  // },
-  // actionButton: {
-  //   backgroundColor: 'black',
-  //   paddingVertical: 12,
-  //   borderRadius: 8,
-  //   marginTop: 10,
-  // },
-  // actionButtonText: {
-  //   color: 'white',
-  //   textAlign: 'center',
-  //   fontWeight: '600',
-  // },
+  modalTopBarTitle: {
+    fontSize: GlobalStyle.LabelFontSize,
+    fontWeight: 'bold',
+  },
+  modalTopBarIcon: {
+    fontSize: 22,
+    marginRight: 10,
+  },
+  modalTextTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginVertical: 10,
+  },
+  modalTextDetail: {
+    color: '#333',
+    fontSize: GlobalStyle.LabelFontSize,
+    marginBottom: 4,
+  },
+  primaryButton: {
+    height: 50,
+    backgroundColor: Colors.light.secondary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: GlobalStyle.BorderRadius,
+    flexDirection: 'row',
+    gap: 10
+  },
+  primaryButtonText: {
+    color: '#333',
+    fontSize: GlobalStyle.ButtomTextFontSize,
+    fontWeight: 'bold',
+  },
+  //Modal
 });

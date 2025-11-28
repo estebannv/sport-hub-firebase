@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     borderRadius: GlobalStyle.BorderRadius,
   },
   descriptionContainer: {
-    padding: 12,
+    paddingVertical: 12,
   },
   descriptionName: {
     fontSize: 16,

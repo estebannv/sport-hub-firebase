@@ -14,6 +14,7 @@ const reservationsData = [
     time: '6:00 pm',
     price: '$15,000',
     status: 'upcoming',
+    category: 'Basketball'
   },
   {
     id: '2',
@@ -23,6 +24,7 @@ const reservationsData = [
     time: '09:00 am',
     price: '$5,000',
     status: 'upcoming',
+    category: 'Futbol'
   },
 ];
 
@@ -49,6 +51,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: GlobalStyle.PaddingHorizontal,
     backgroundColor: 'white',
+    marginTop: 10,
   },
   topBar: {
     flexDirection: 'row',
