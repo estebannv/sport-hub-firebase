@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: GlobalStyle.PaddingHorizontal,
     backgroundColor: 'white',
-    marginTop: 10,
+    paddingTop: 10,
   },
   topBar: {
     flexDirection: 'row',
