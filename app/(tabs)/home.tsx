@@ -165,7 +165,6 @@ const styles = StyleSheet.create({
   topBarLocationDetail: {
     fontSize: 15,
     fontWeight: '600',
-    maxWidth: 90
   },
   topBarLocationDetailBottom: {
     fontSize: 13,
