@@ -1,4 +1,5 @@
 import AuthService from '@/services/auth.service';
+import ValidationService from '@/services/validation.service';
 import EncryptionUtil from '@/utils/encryption.util';
 import AntDesign from '@expo/vector-icons/build/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -22,13 +23,10 @@ const LoginScreen = () => {
 
 		try {
 
-			if (!isValidEmail(email)) {
-				setErrorOutput('El correo electrónico ingresado no es válido.');
-				return;
-			}
-
-			if (password == '') {
-				setErrorOutput('La contraseña ingresada no es válida.');
+			const validation = ValidationService.validateEmailAndPassword(email, password);
+			
+			if (!validation.isValid) {
+				setErrorOutput(validation.message);
 				return;
 			}
 			
@@ -48,16 +46,6 @@ const LoginScreen = () => {
 		}
 
 		setLoading(false);
-	};
-
-	const isValidEmail = (email: string): boolean => {
-
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-		if (email == '' || !emailRegex.test(email))
-			return false;
-
-		return true;
 	};
 
 	return (

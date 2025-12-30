@@ -1,4 +1,6 @@
 import PasswordStrength from '@/components/PasswordStrength';
+import ValidationService from '@/services/validation.service';
+import AntDesign from '@expo/vector-icons/build/AntDesign';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -21,6 +23,9 @@ const RegisterScreen = () => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [fullNameError, setFullNameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 
   // useEffect(() => {
   // FillProvinceDropdown();
@@ -71,6 +76,37 @@ const RegisterScreen = () => {
   // };
 
   const HandlePreRegister = () => {
+    // Limpiar errores previos
+    setFullNameError('');
+    setEmailError('');
+    setPasswordError('');
+
+    // Validar cada campo individualmente
+    const fullNameValidation = ValidationService.validateFullName(fullName);
+    const emailValidation = ValidationService.validateEmail(email);
+    const passwordValidation = ValidationService.validatePassword(password);
+
+    let hasErrors = false;
+
+    if (!fullNameValidation.isValid) {
+      setFullNameError(fullNameValidation.message);
+      hasErrors = true;
+    }
+
+    if (!emailValidation.isValid) {
+      setEmailError(emailValidation.message);
+      hasErrors = true;
+    }
+
+    if (!passwordValidation.isValid) {
+      setPasswordError(passwordValidation.message);
+      hasErrors = true;
+    }
+
+    if (hasErrors) {
+      return;
+    }
+
     router.push({
       pathname: '/registration/step-2',
       params: { email: email }
@@ -88,39 +124,71 @@ const RegisterScreen = () => {
         <Text style={styles.subtitle}>Ingresa tus datos para empezar a explorar</Text>
       </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Nombre completo"
-        placeholderTextColor={Colors.light.placeholder}
-        value={fullName}
-        onChangeText={setFullName}
-      />
+      <View>
+        <TextInput
+          style={[styles.input, fullNameError !== '' && styles.inputError]}
+          placeholder="Nombre completo"
+          placeholderTextColor={Colors.light.placeholder}
+          value={fullName}
+          onChangeText={(text) => {
+            setFullName(text);
+            if (fullNameError !== '') {
+              setFullNameError('');
+            }
+          }}
+        />
+        {fullNameError !== '' && (
+          <Text style={styles.errorText}>{fullNameError}</Text>
+        )}
+      </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Correo electrónico"
-        placeholderTextColor={Colors.light.placeholder}
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-      />
+      <View>
+        <TextInput
+          style={[styles.input, emailError !== '' && styles.inputError]}
+          placeholder="Correo electrónico"
+          placeholderTextColor={Colors.light.placeholder}
+          value={email}
+          onChangeText={(text) => {
+            setEmail(text);
+            if (emailError !== '') {
+              setEmailError('');
+            }
+          }}
+          keyboardType="email-address"
+        />
+        {emailError !== '' && (
+          <Text style={styles.errorText}>{emailError}</Text>
+        )}
+      </View>
 
-      <View >
+      <View>
 
         <TextInput
-          style={styles.input}
+          style={[styles.input, passwordError !== '' && styles.inputError]}
           placeholder="Contraseña"
           placeholderTextColor={Colors.light.placeholder}
           value={password}
-          onChangeText={setPassword}
+          onChangeText={(text) => {
+            setPassword(text);
+            if (passwordError !== '') {
+              setPasswordError('');
+            }
+          }}
           secureTextEntry={!passwordVisible}
         />
 
         <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)} style={styles.passwordToggle}>
-          <Text style={styles.passwordToggleText}>
-            {passwordVisible ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-          </Text>
-        </TouchableOpacity>
+						<Text style={styles.passwordToggleText}>
+							{passwordVisible ? 
+								<AntDesign name="eye-invisible" size={24} color="black" /> : 
+								<AntDesign name="eye" size={24} color="black" />
+							}
+						</Text>
+					</TouchableOpacity>
+
+        {passwordError !== '' && (
+          <Text style={styles.errorText}>{passwordError}</Text>
+        )}
 
       </View>
 
@@ -200,9 +268,12 @@ const styles = StyleSheet.create({
     borderRadius: GlobalStyle.BorderRadius,
     paddingHorizontal: 16,
     fontSize: GlobalStyle.LabelFontSize,
-    marginBottom: 16,
+    marginBottom: 12,
     borderWidth: 1,
     borderColor: Colors.light.border
+  },
+  inputError: {
+    borderColor: '#ec1c1cff',
   },
   //General
   	//Header
@@ -271,6 +342,12 @@ const styles = StyleSheet.create({
     marginLeft: 6,
   },
   //Footer
+  errorText: {
+    fontSize: 14,
+    color: '#ec1c1cff',
+    marginBottom: 12,
+    marginLeft: 4,
+  },
   // dropdown: {
   //   height: 50,
   //   borderColor: 'gray',
