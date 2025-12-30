@@ -1,12 +1,13 @@
 import OTPInput from '@/components/OtpInput';
 import { Colors, GlobalStyle } from '@/constants/theme';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const OTPScreen = () => {
 
+    const { email } = useLocalSearchParams<{ email: string }>();
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [timer, setTimer] = useState(30);
 
@@ -40,7 +41,7 @@ const OTPScreen = () => {
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
 
             <Text style={styles.title}>Verifica tu correo electrónico</Text>
-            <Text style={styles.subtitle}>Hemos enviado un código a navarro@gmail.com </Text>
+            <Text style={styles.subtitle}>Hemos enviado un código a {email || 'tu correo electrónico'} </Text>
 
             <OTPInput 
                 otp={otp}

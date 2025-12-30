@@ -7,7 +7,7 @@ const AuthService = {
 
   async SignIn(payload: Record<string, any>): Promise<ApiResponse<string>> {
 
-    // const url = `${api}/sign-in`;
+    // const url = `${api}/auth/sign-in`;
     const url = `http://localhost:8090/auth/sign-in`;
 
     var response = await fetch(url, {

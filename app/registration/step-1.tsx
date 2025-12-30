@@ -71,7 +71,10 @@ const RegisterScreen = () => {
   // };
 
   const HandlePreRegister = () => {
-    router.push('/registration/step-2');
+    router.push({
+      pathname: '/registration/step-2',
+      params: { email: email }
+    });
   };
 
   return (
@@ -80,10 +83,10 @@ const RegisterScreen = () => {
 
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
 
-        {/* <ScrollView style={{ flex: 1 }}> */}
-
-      <Text style={styles.title}>Crea tu cuenta</Text>
-      <Text style={styles.subtitle}>Ingresa tus datos para empezar a explorar</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Crear cuenta</Text>
+        <Text style={styles.subtitle}>Ingresa tus datos para empezar a explorar</Text>
+      </View>
 
       <TextInput
         style={styles.input}
@@ -179,8 +182,6 @@ const RegisterScreen = () => {
 
       </View>
 
-      {/* </ScrollView> */}
-
       </KeyboardAvoidingView>
       
     </SafeAreaView>
@@ -204,22 +205,22 @@ const styles = StyleSheet.create({
     borderColor: Colors.light.border
   },
   //General
-  //Header
-  title: {
-    fontSize: GlobalStyle.TitleFontSize,
-    fontWeight: 'bold',
-    color: Colors.light.text,
-    marginVertical: 15,
-    alignSelf: 'center',
-    // fontFamily: Fonts.serif
-  },
-  subtitle: {
-    fontSize: GlobalStyle.LabelFontSize,
-    color: Colors.light.text,
-    marginBottom: 20,
-    alignSelf: 'center',
-  },
-  //Header
+  	//Header
+	header: {
+		marginTop: 10,
+		marginBottom: 15,
+	},
+	title: {
+		fontSize: GlobalStyle.TitleFontSize,
+		fontWeight: 'bold',
+		color: Colors.light.text,
+	},
+	subtitle: {
+		fontSize: GlobalStyle.LabelFontSize,
+		color: Colors.light.text,
+		marginBottom: 20,
+	},
+	//Header
   //Password toggle
   passwordToggle: {
     position: 'absolute',

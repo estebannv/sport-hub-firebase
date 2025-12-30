@@ -6,7 +6,7 @@
 import { Platform } from 'react-native';
 
 // const mainColor = '#ff1e00c2';
-const mainColor = '#ec3a43ff';
+const mainColor = '#3464ffff';
 
 export const Colors = {
   light: {

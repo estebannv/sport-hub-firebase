@@ -1,5 +1,8 @@
 import AuthService from '@/services/auth.service';
 import EncryptionUtil from '@/utils/encryption.util';
+import AntDesign from '@expo/vector-icons/build/AntDesign';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -12,12 +15,26 @@ const LoginScreen = () => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [errorOutput, setErrorOutput] = useState('');
+	const [passwordVisible, setPasswordVisible] = useState(false);
+	const [loading, setLoading] = useState(false);
 
 	const handleLogin = async () => {
 
 		try {
 
-			const passwordEncrypted = EncryptionUtil.Encrypt(password);
+			if (!isValidEmail(email)) {
+				setErrorOutput('El correo electrónico ingresado no es válido.');
+				return;
+			}
+
+			if (password == '') {
+				setErrorOutput('La contraseña ingresada no es válida.');
+				return;
+			}
+			
+			setLoading(true);
+			
+			var passwordEncrypted = EncryptionUtil.Encrypt(password);
 			var response = await AuthService.SignIn({ Email: email, Password: passwordEncrypted.encryptedData });
 
 			if (response.Status == 200)
@@ -29,6 +46,18 @@ const LoginScreen = () => {
 			console.log(error)
 			setErrorOutput('No pudimos procesar tu solicitud, inténtelo de nuevo más tarde.')
 		}
+
+		setLoading(false);
+	};
+
+	const isValidEmail = (email: string): boolean => {
+
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+		if (email == '' || !emailRegex.test(email))
+			return false;
+
+		return true;
 	};
 
 	return (
@@ -37,7 +66,10 @@ const LoginScreen = () => {
 
 			<KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
 
-				<Text style={styles.title}>Iniciar sesión</Text>
+				<View style={styles.header}>
+					<Text style={styles.title}>Iniciar sesión</Text>
+					<Text style={styles.subtitle}>Ingresa tus datos para empezar a explorar</Text>
+				</View>
 
 				<TextInput
 					style={styles.input}
@@ -48,39 +80,64 @@ const LoginScreen = () => {
 					keyboardType="email-address"
 					autoCapitalize="none"
 				/>
-				<TextInput
-					style={styles.input}
-					placeholder="Contraseña"
-					placeholderTextColor={Colors.light.placeholder}
-					value={password}
-					onChangeText={setPassword}
-					secureTextEntry
-				/>
 
-				{errorOutput != '' ? <Text style={styles.errorOutput}>{errorOutput}</Text> : null}
+				<View>
 
-				<TouchableOpacity onPress={() => router.push('/forgot-password/step-1')}>
-					<Text style={styles.forgotPassword}>¿Olvidó su contraseña?</Text>
-				</TouchableOpacity>
+					<TextInput
+						style={styles.input}
+						placeholder="Contraseña"
+						placeholderTextColor={Colors.light.placeholder}
+						value={password}
+						onChangeText={setPassword}
+						secureTextEntry={!passwordVisible}
+					/>
 
-				<View style={styles.registerSection}>
-
-					<Text style={styles.registerSectionText}>¿No tienes una cuenta?</Text>
-
-					<TouchableOpacity onPress={() => router.push('/registration/step-1')}>
-						<Text style={styles.registerLink}>Registrarse</Text>
+					<TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)} style={styles.passwordToggle}>
+						<Text style={styles.passwordToggleText}>
+							{passwordVisible ? 
+								<AntDesign name="eye-invisible" size={24} color="black" /> : 
+								<AntDesign name="eye" size={24} color="black" />
+							}
+						</Text>
 					</TouchableOpacity>
 
 				</View>
 
+				{errorOutput != '' ?
+					<View style={styles.errorOutputSection}>
+						<Ionicons style={styles.errorOutputIcon} name="alert-circle-outline" />
+						<Text style={styles.errorOutput}>{errorOutput}</Text>
+					</View>
+
+					: null}
+
+				<TouchableOpacity style={styles.forgotPassword} onPress={() => router.push('/forgot-password/step-1')}>
+					<Text style={styles.forgotPasswordText}>¿Olvidó su contraseña?</Text>
+				</TouchableOpacity>
+
 				<View style={styles.footer}>
 
-					<TouchableOpacity style={styles.primaryButton} onPress={handleLogin}>
-						<Text style={styles.primaryButtonText}>Continuar</Text>
+					<View style={styles.registerSection}>
+
+						<Text style={styles.registerSectionText}>¿No tienes una cuenta?</Text>
+
+						<TouchableOpacity onPress={() => router.push('/registration/step-1')}>
+							<Text style={styles.registerLink}>Registrarse</Text>
+						</TouchableOpacity>
+
+					</View>
+
+					<TouchableOpacity style={[styles.primaryButton, loading && styles.disabled]} onPress={handleLogin} disabled={loading} >
+						{/* {loading ? 
+							<Image source={require("../assets/loading.gif")} style={styles.gif} /> : 
+							<Text style={styles.primaryButtonText}>Iniciar sesión</Text>
+						} */}
+						<Text style={styles.primaryButtonText}>Iniciar sesión</Text>
 					</TouchableOpacity>
 
 					<TouchableOpacity style={styles.secondaryButton} onPress={handleLogin}>
-						<Text style={styles.secondaryButtonText}>Continuar con Google</Text>
+						<FontAwesome name="google" size={24} color="black" />
+						<Text style={styles.secondaryButtonText}>Registrarse con Google</Text>
 					</TouchableOpacity>
 
 				</View>
@@ -97,7 +154,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 		paddingHorizontal: GlobalStyle.PaddingHorizontal,
 		backgroundColor: Colors.light.background,
-		position: 'relative'
 	},
 	input: {
 		width: '100%',
@@ -110,35 +166,70 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderColor: Colors.light.border
 	},
+	disabled: {
+		opacity: 0.7,
+	},
+	gif: {
+		width: 32,
+		height: 32,
+	},
+	errorOutputSection: {
+		flexDirection: 'row',
+		alignItems: 'center'
+	},
 	errorOutput: {
-		fontSize: GlobalStyle.LabelFontSize,
+		fontSize: 15,
+		color: '#ec1c1cff'
+	},
+	errorOutputIcon: {
+		fontSize: 19,
+		color: '#ec1c1cff',
+		marginRight: 5,
 	},
 	//General
 	//Header
+	header: {
+		marginTop: '30%',
+		marginBottom: 15,
+	},
 	title: {
 		fontSize: GlobalStyle.TitleFontSize,
 		fontWeight: 'bold',
 		color: Colors.light.text,
-		marginVertical: 35,
-		alignSelf: 'center',
-		// fontFamily: Fonts.serif
+	},
+	subtitle: {
+		fontSize: GlobalStyle.LabelFontSize,
+		color: Colors.light.text,
+		marginBottom: 20,
 	},
 	//Header
+	//Password toggle
+	passwordToggle: {
+		position: 'absolute',
+		right: 0,
+		height: 50,
+		justifyContent: 'center',
+		paddingRight: 15
+	},
+	passwordToggleText: {
+		color: Colors.light.main,
+		fontWeight: '500',
+	},
 	//Forgot Password
 	forgotPassword: {
+		marginTop: 20
+	},
+	forgotPasswordText: {
 		fontSize: GlobalStyle.LabelFontSize,
 		color: Colors.light.main,
 		fontWeight: 'bold',
-		marginLeft: 6,
-		textAlign: 'right',
-		paddingBottom: 15,
+		textAlign: 'center',
 	},
 	//Register
 	registerSection: {
 		flexDirection: 'row',
 		alignSelf: 'center',
-		paddingTop: 15,
-		paddingBottom: 30,
+		marginBottom: 23
 	},
 	registerSectionText: {
 		fontSize: GlobalStyle.LabelFontSize,
@@ -172,6 +263,8 @@ const styles = StyleSheet.create({
 		fontWeight: 'bold',
 	},
 	secondaryButton: {
+		flexDirection: 'row',
+		gap: 10,
 		height: 50,
 		backgroundColor: Colors.light.secondary,
 		justifyContent: 'center',

@@ -49,7 +49,7 @@ const AccountScreen = () => {
           <OptionItem icon="building-circle-arrow-right" label="Registrar mi centro deportivo" onPress={() => router.push('/billetera')} />
         </View>
 
-        <TouchableOpacity onPress={() => {}}>
+        <TouchableOpacity onPress={() => router.push('/login')}>
           <Text style={styles.logoutButtonText}>Cerrar Sesión</Text>
         </TouchableOpacity>
 
@@ -70,10 +70,10 @@ const styles = StyleSheet.create({
   //General
   //Header section
   header: {
-    fontSize: 20,
+    fontSize: 17,
     fontWeight: 'bold',
     alignSelf: 'center',
-    marginBottom: 30,
+    marginVertical: 15,
   },
   //Header section
   //Options section
