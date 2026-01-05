@@ -15,6 +15,8 @@ const LoginScreen = () => {
 	const router = useRouter();
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
+	const [emailError, setEmailError] = useState('');
+	const [passwordError, setPasswordError] = useState('');
 	const [errorOutput, setErrorOutput] = useState('');
 	const [passwordVisible, setPasswordVisible] = useState(false);
 	const [loading, setLoading] = useState(false);
@@ -22,11 +24,28 @@ const LoginScreen = () => {
 	const handleLogin = async () => {
 
 		try {
+			// Limpiar errores previos
+			setEmailError('');
+			setPasswordError('');
+			setErrorOutput('');
 
-			const validation = ValidationService.validateEmailAndPassword(email, password);
-			
-			if (!validation.isValid) {
-				setErrorOutput(validation.message);
+			// Validar cada campo individualmente
+			const emailValidation = ValidationService.validateEmail(email);
+			const passwordValidation = ValidationService.validatePassword(password);
+
+			let hasErrors = false;
+
+			if (!emailValidation.isValid) {
+				setEmailError(emailValidation.message);
+				hasErrors = true;
+			}
+
+			if (!passwordValidation.isValid) {
+				setPasswordError(passwordValidation.message);
+				hasErrors = true;
+			}
+
+			if (hasErrors) {
 				return;
 			}
 			
@@ -59,24 +78,39 @@ const LoginScreen = () => {
 					<Text style={styles.subtitle}>Ingresa tus datos para empezar a explorar</Text>
 				</View>
 
-				<TextInput
-					style={styles.input}
-					placeholder="Correo electrónico"
-					placeholderTextColor={Colors.light.placeholder}
-					value={email}
-					onChangeText={setEmail}
-					keyboardType="email-address"
-					autoCapitalize="none"
-				/>
+				<View>
+					<TextInput
+						style={[styles.input, emailError !== '' && styles.inputError]}
+						placeholder="Correo electrónico"
+						placeholderTextColor={Colors.light.placeholder}
+						value={email}
+						onChangeText={(text) => {
+							setEmail(text);
+							if (emailError !== '') {
+								setEmailError('');
+							}
+						}}
+						keyboardType="email-address"
+						autoCapitalize="none"
+					/>
+					{emailError !== '' && (
+						<Text style={styles.errorText}>{emailError}</Text>
+					)}
+				</View>
 
 				<View>
 
 					<TextInput
-						style={styles.input}
+						style={[styles.input, passwordError !== '' && styles.inputError]}
 						placeholder="Contraseña"
 						placeholderTextColor={Colors.light.placeholder}
 						value={password}
-						onChangeText={setPassword}
+						onChangeText={(text) => {
+							setPassword(text);
+							if (passwordError !== '') {
+								setPasswordError('');
+							}
+						}}
 						secureTextEntry={!passwordVisible}
 					/>
 
@@ -88,6 +122,10 @@ const LoginScreen = () => {
 							}
 						</Text>
 					</TouchableOpacity>
+
+					{passwordError !== '' && (
+						<Text style={styles.errorText}>{passwordError}</Text>
+					)}
 
 				</View>
 
@@ -150,9 +188,12 @@ const styles = StyleSheet.create({
 		borderRadius: GlobalStyle.BorderRadius,
 		paddingHorizontal: 16,
 		fontSize: GlobalStyle.LabelFontSize,
-		marginBottom: 16,
+		marginBottom: 12,
 		borderWidth: 1,
 		borderColor: Colors.light.border
+	},
+	inputError: {
+		borderColor: '#ec1c1cff',
 	},
 	disabled: {
 		opacity: 0.7,
@@ -161,9 +202,16 @@ const styles = StyleSheet.create({
 		width: 32,
 		height: 32,
 	},
+	errorText: {
+		fontSize: 14,
+		color: '#ec1c1cff',
+		marginBottom: 12,
+		marginLeft: 4,
+	},
 	errorOutputSection: {
 		flexDirection: 'row',
-		alignItems: 'center'
+		alignItems: 'center',
+		marginTop: 10,
 	},
 	errorOutput: {
 		fontSize: 15,

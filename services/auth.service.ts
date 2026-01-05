@@ -22,6 +22,23 @@ const AuthService = {
 
   },
 
+  async SendOTP(payload: { Email: string }): Promise<ApiResponse<string>> {
+
+    // const url = `${api}/auth/send-otp`;
+    const url = `http://localhost:8090/auth/send-otp`;
+
+    var response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+    return HandleResponse<string>(response);
+
+  },
+
 };
 
 export default AuthService;
