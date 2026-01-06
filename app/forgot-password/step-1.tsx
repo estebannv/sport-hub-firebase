@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors, Fonts, GlobalStyle } from '../../constants/theme';
+import { Colors, GlobalStyle } from '../../constants/theme';
 
 const ForgotPasswordStep1 = () => {
 
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     borderRadius: GlobalStyle.BorderRadius,
     paddingHorizontal: 16,
     fontSize: GlobalStyle.LabelFontSize,
-    marginBottom: 4,
+    marginBottom: 16,
     borderWidth: 1,
     borderColor: Colors.light.border
   },

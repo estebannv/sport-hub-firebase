@@ -1,5 +1,6 @@
 
 import { Colors, GlobalStyle } from '@/constants/theme';
+import React, { useRef } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 interface OTPInputProps {
@@ -10,16 +11,39 @@ interface OTPInputProps {
 }
 
 const OTPInput = (props: OTPInputProps) => {
+
+    const inputRefs = useRef<(TextInput | null)[]>([]);
+
+    const handleTextChange = (text: string, index: number) => {
+        
+        const numericText = text.replace(/[^0-9]/g, '');
+        
+        props.handleChange(numericText, index);
+
+        if (numericText.length > 0 && index < props.otp.length - 1) {
+            inputRefs.current[index + 1]?.focus();
+        }
+    };
+
+    const handleKeyPress = (e: any, index: number) => {
+        
+        if (e.nativeEvent.key === 'Backspace' && props.otp[index] === '' && index > 0) {
+            inputRefs.current[index - 1]?.focus();
+        }
+    };
+
     return (
         <View>
             <View style={styles.otpContainer}>
                 {props.otp.map((digit, index) => (
                     <TextInput
                         key={index}
+                        ref={(ref) => { inputRefs.current[index] = ref; }}
                         style={styles.otpInput}
                         keyboardType="number-pad"
                         maxLength={1}
-                        onChangeText={(text) => props.handleChange(text, index)}
+                        onChangeText={(text) => handleTextChange(text, index)}
+                        onKeyPress={(e) => handleKeyPress(e, index)}
                         value={digit}
                     />
                 ))}
@@ -53,11 +77,12 @@ const styles = StyleSheet.create({
         borderRadius: GlobalStyle.BorderRadius,
         textAlign: 'center',
         fontSize: 20,
+        color: Colors.light.text,
     },
     resendText: {
         fontWeight: 'bold',
         fontSize: 16,
-        marginBottom: 20,
+        marginBottom: 25,
         alignSelf: 'center'
     },
     resendTextEnabled: {

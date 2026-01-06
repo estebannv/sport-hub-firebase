@@ -1,6 +1,7 @@
 import OTPInput from '@/components/OtpInput';
 import PasswordStrength from '@/components/PasswordStrength';
-import { useRouter } from 'expo-router';
+import AuthService from '@/services/auth.service';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,10 +9,12 @@ import { Colors, GlobalStyle } from '../../constants/theme';
 
 const ForgotPasswordStep2 = () => {
 
+  const { email } = useLocalSearchParams<{ email: string }>();
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [timer, setTimer] = useState(30);
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [errorOutput, setErrorOutput] = useState('');
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -31,7 +34,33 @@ const ForgotPasswordStep2 = () => {
     setOtp(newOtp);
 };
 
-const handleResend = () => setTimer(30);
+  const handleResend = async () => {
+    
+    if (!email) {
+      setErrorOutput('No se encontró el correo electrónico.');
+      return;
+    }
+
+    try {
+
+      setLoading(true);
+      setErrorOutput('');
+
+      const response = await AuthService.SendOTP({ Email: email });
+
+      if (response.Status == 200) {
+        setTimer(30);
+      } else {
+        setErrorOutput(response.Message || 'No se pudo reenviar el código. Inténtelo de nuevo más tarde.');
+      }
+
+    } catch (error) {
+      console.log(error);
+      setErrorOutput('No pudimos procesar tu solicitud, inténtelo de nuevo más tarde.');
+    }
+
+    setLoading(false);
+  };
 
   return (
 
@@ -39,7 +68,8 @@ const handleResend = () => setTimer(30);
 
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
 
-        <Text style={styles.title}>Restablecer contraseña</Text>
+        <Text style={styles.title}>Cambiar contraseña</Text>
+        <Text style={styles.subtitle}>Código de verificación</Text>
 
         <OTPInput 
                 otp={otp}
@@ -47,6 +77,12 @@ const handleResend = () => setTimer(30);
                 handleChange={handleChange}
                 handleResend={handleResend}
             />
+
+        {errorOutput !== '' && (
+          <View style={styles.errorOutputSection}>
+            <Text style={styles.errorOutput}>{errorOutput}</Text>
+          </View>
+        )}
         
         <TextInput
           style={styles.input}
@@ -54,15 +90,6 @@ const handleResend = () => setTimer(30);
           placeholderTextColor={Colors.light.placeholder}
           value={password}
           onChangeText={setPassword}
-          secureTextEntry
-        />
-
-        <TextInput
-          style={styles.input}
-          placeholder="Confirmar contraseña"
-          placeholderTextColor={Colors.light.placeholder}
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
           secureTextEntry
         />
 
@@ -107,9 +134,12 @@ const styles = StyleSheet.create({
     fontSize: GlobalStyle.TitleFontSize,
     fontWeight: 'bold',
     color: Colors.light.text,
-    marginVertical: 35,
-    alignSelf: 'center',
-    // fontFamily: Fonts.serif
+    marginVertical: 20,
+  },
+  subtitle: {
+    fontSize: GlobalStyle.LabelFontSize,
+    color: Colors.light.text,
+    marginBottom: 27,
   },
   //Header
   //Footer
@@ -132,6 +162,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   //Footer
+  errorOutputSection: {
+    marginBottom: 16,
+    marginTop: 10,
+  },
+  errorOutput: {
+    fontSize: 15,
+    color: '#ec1c1cff',
+    textAlign: 'center',
+  },
 });
 
 export default ForgotPasswordStep2;

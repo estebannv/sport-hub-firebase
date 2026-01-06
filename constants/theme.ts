@@ -59,7 +59,7 @@ export const Fonts = Platform.select({
 export const GlobalStyle = {
   BorderRadius: 10,
   PaddingHorizontal: 16,
-  TitleFontSize: 35,
+  TitleFontSize: 28,
   LabelFontSize: 16,
   ButtomTextFontSize: 16.5,
 };
