@@ -15,11 +15,10 @@ const ForgotPasswordStep1 = () => {
   const router = useRouter();
 
   const handleContinue = async () => {
-    // Limpiar errores previos
+    
     setEmailError('');
     setErrorOutput('');
 
-    // Validar email
     const emailValidation = ValidationService.validateEmail(email);
     
     if (!emailValidation.isValid) {
@@ -28,6 +27,7 @@ const ForgotPasswordStep1 = () => {
     }
 
     try {
+
       setLoading(true);
       
       const response = await AuthService.SendOTP({ Email: email });
@@ -37,6 +37,7 @@ const ForgotPasswordStep1 = () => {
           pathname: '/forgot-password/step-2',
           params: { email: email }
         });
+        
       } else {
         setErrorOutput(response.Message || 'No se pudo enviar el código. Inténtelo de nuevo más tarde.');
       }
@@ -55,6 +56,7 @@ const ForgotPasswordStep1 = () => {
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
 
         <Text style={styles.title}>Recuperar contraseña</Text>
+        <Text style={styles.subtitle}>Ingresa tu correo electrónico para recuperar tu contraseña</Text>
 
         <View>
           <TextInput
@@ -141,13 +143,17 @@ const styles = StyleSheet.create({
   //General
   //Header
   title: {
-    fontSize: GlobalStyle.TitleFontSize,
-    fontWeight: 'bold',
-    color: Colors.light.text,
-    marginVertical: 35,
-    alignSelf: 'center',
-    // fontFamily: Fonts.serif
-  },
+		fontSize: GlobalStyle.TitleFontSize,
+		fontWeight: 'bold',
+		color: Colors.light.text,
+    marginTop: 30,
+    marginBottom: 15,
+	},
+	subtitle: {
+		fontSize: GlobalStyle.LabelFontSize,
+		color: Colors.light.text,
+		marginBottom: 30,
+	},
   //Header
   //Footer
   footer:{

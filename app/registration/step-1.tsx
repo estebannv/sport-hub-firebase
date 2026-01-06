@@ -26,6 +26,7 @@ const RegisterScreen = () => {
   const [fullNameError, setFullNameError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [passwordIsValid, setPasswordIsValid] = useState(false);
 
   // useEffect(() => {
   // FillProvinceDropdown();
@@ -192,7 +193,10 @@ const RegisterScreen = () => {
 
       </View>
 
-      <PasswordStrength password={password} />
+      <PasswordStrength 
+        password={password} 
+        onValidationChange={setPasswordIsValid}
+      />
 
       {/* <Dropdown
                     style={styles.input}
@@ -226,6 +230,10 @@ const RegisterScreen = () => {
                     onChange={(item) => setDistrictId(item.value)}
                     placeholderStyle={{ color: Colors.light.icon }}
                   /> */}
+
+      {passwordIsValid === false && (
+        <Text style={styles.errorText}>{passwordError}</Text>
+      )}
 
       <View style={styles.bottomSection}>
 

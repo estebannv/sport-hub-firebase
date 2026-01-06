@@ -39,6 +39,23 @@ const AuthService = {
 
   },
 
+  async ChangePassword(payload: { Email: string, Password: string, OTP: string }): Promise<ApiResponse<string>> {
+
+    // const url = `${api}/auth/change-password`;
+    const url = `http://localhost:8090/auth/change-password`;
+
+    var response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+    return HandleResponse<string>(response);
+
+  },
+
 };
 
 export default AuthService;

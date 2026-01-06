@@ -16,16 +16,41 @@ const ForgotPasswordStep2 = () => {
   const [errorOutput, setErrorOutput] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [passwordIsValid, setPasswordIsValid] = useState(false);
 
   useEffect(() => {
-          const interval = setInterval(() => {
-              setTimer((prevTimer) => (prevTimer > 0 ? prevTimer - 1 : 0));
-          }, 1000);
-          return () => clearInterval(interval);
-      }, []);
+    const interval = setInterval(() => {
+        setTimer((prevTimer) => (prevTimer > 0 ? prevTimer - 1 : 0));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
-  const handleContinue = () => {
-    router.push('/login');
+  const handleSubmit = async () => {
+
+    if (!passwordIsValid) {
+      return;
+    }
+
+    try {
+
+    setLoading(true);
+    setErrorOutput('');
+
+    const response = await AuthService.ChangePassword({ Email: email, Password: password, OTP: otp?.join('') });
+    
+    if (response.Status == 200) {
+      router.push('/login');
+    } else {
+      setErrorOutput(response.Message || 'No se pudo cambiar la contraseña. Inténtelo de nuevo más tarde.');
+    }
+    
+    } catch (error) {
+      console.log(error);
+      setErrorOutput('No pudimos procesar tu solicitud, inténtelo de nuevo más tarde.');
+    }
+
+    setLoading(false);
+    
   };
 
   const handleChange = (text: string, index: number) => {
@@ -37,7 +62,6 @@ const ForgotPasswordStep2 = () => {
   const handleResend = async () => {
     
     if (!email) {
-      setErrorOutput('No se encontró el correo electrónico.');
       return;
     }
 
@@ -78,12 +102,6 @@ const ForgotPasswordStep2 = () => {
                 handleResend={handleResend}
             />
 
-        {errorOutput !== '' && (
-          <View style={styles.errorOutputSection}>
-            <Text style={styles.errorOutput}>{errorOutput}</Text>
-          </View>
-        )}
-        
         <TextInput
           style={styles.input}
           placeholder="Contraseña"
@@ -93,11 +111,20 @@ const ForgotPasswordStep2 = () => {
           secureTextEntry
         />
 
-        <PasswordStrength password={password} />
+        <PasswordStrength 
+          password={password} 
+          onValidationChange={setPasswordIsValid}
+        />
+
+        {passwordIsValid === false && (
+          <View style={styles.errorOutputSection}>
+            <Text style={styles.errorOutput}>{errorOutput}</Text>
+          </View>
+        )}
 
         <View style={styles.footer}>
 
-          <TouchableOpacity style={styles.primaryButton} onPress={handleContinue}>
+          <TouchableOpacity style={styles.primaryButton} onPress={handleSubmit}>
             <Text style={styles.primaryButtonText}>Cambiar contraseña</Text>
           </TouchableOpacity>
 
@@ -163,8 +190,7 @@ const styles = StyleSheet.create({
   },
   //Footer
   errorOutputSection: {
-    marginBottom: 16,
-    marginTop: 10,
+    marginTop: 20,
   },
   errorOutput: {
     fontSize: 15,

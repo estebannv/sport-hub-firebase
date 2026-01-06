@@ -1,12 +1,13 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 type PasswordStrengthProps = {
   password?: string;
+  onValidationChange?: (isValid: boolean) => void;
 };
 
-const PasswordStrength = ({ password = '' }: PasswordStrengthProps) => {
+const PasswordStrength = ({ password = '', onValidationChange }: PasswordStrengthProps) => {
   
   const requirements = [
     {
@@ -22,10 +23,18 @@ const PasswordStrength = ({ password = '' }: PasswordStrengthProps) => {
       met: (password.match(/\d/g) || []).length >= 4,
     },
     {
-      text: 'Caracteres especiales (!@#$%^&*(),.?":{}|<>)',
-      met: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+      text: 'Caracteres especiales (!#$%^&*(),.?:)',
+      met: /[!#$%^&*(),.?:]/.test(password),
     },
   ];
+
+  const isValid = requirements.every(req => req.met);
+
+  useEffect(() => {
+    if (onValidationChange) {
+      onValidationChange(isValid);
+    }
+  }, [isValid, onValidationChange]);
 
   return (
     <View style={styles.container}>
