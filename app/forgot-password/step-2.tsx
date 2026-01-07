@@ -70,7 +70,7 @@ const ForgotPasswordStep2 = () => {
       setLoading(true);
       setErrorOutput('');
 
-      const response = await AuthService.SendOTP({ Email: email });
+      const response = await AuthService.SendPasswordResetOtp({ Email: email });
 
       if (response.Status == 200) {
         setTimer(30);
@@ -124,7 +124,7 @@ const ForgotPasswordStep2 = () => {
 
         <View style={styles.footer}>
 
-          <TouchableOpacity style={styles.primaryButton} onPress={handleSubmit}>
+          <TouchableOpacity style={styles.primaryButton} onPress={handleSubmit} disabled={loading}>
             <Text style={styles.primaryButtonText}>Cambiar contraseña</Text>
           </TouchableOpacity>
 

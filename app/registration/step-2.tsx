@@ -1,5 +1,6 @@
 import OTPInput from '@/components/OtpInput';
 import { Colors, GlobalStyle } from '@/constants/theme';
+import AuthService from '@/services/auth.service';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -7,9 +8,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const OTPScreen = () => {
 
-    const { email } = useLocalSearchParams<{ email: string }>();
+    const { email, fullName, password } = useLocalSearchParams<{ email: string, fullName: string, password: string }>();
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [timer, setTimer] = useState(30);
+    const [loading, setLoading] = useState(false);
+    const [errorOutput, setErrorOutput] = useState('');
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -24,15 +27,63 @@ const OTPScreen = () => {
         setOtp(newOtp);
     };
 
-    const handleResend = () => setTimer(30);
+    const handleResend = async () => {
 
-    const handleSubmit = () => {
-        
-        const otpCode = otp.join('');
-        console.log('OTP Submitted:', otpCode);
-        
-        router.replace('/(tabs)/home');
+        try {
+
+            setLoading(true);
+            setErrorOutput('');
+
+            const response = await AuthService.SendRegistrationOtp({ Email: email });
+
+            if (response.Status == 200) {
+                setTimer(30);
+            } else {
+                setErrorOutput(response.Message || 'No se pudo reenviar el código. Inténtelo de nuevo más tarde.');
+            }
+
+        } catch (error) {
+            console.log(error);
+            setErrorOutput('No pudimos procesar tu solicitud, inténtelo de nuevo más tarde.');
+        }
+
+        setLoading(false);
     };
+
+    const handleSubmit = async () => {
+
+        try {
+
+            const otpCode = otp.join('');
+
+            if (otpCode.length < 6)
+                setErrorOutput('Código de verificación inválido');
+
+            setLoading(true);
+            setErrorOutput('');
+
+            var response = await AuthService.Register({
+                FullName: fullName,
+                Email: email,
+                Password: password,
+                Otp: otpCode
+            });
+
+            if (response.Status == 200) {
+                router.push('/(tabs)/home');
+            } else {
+                setErrorOutput(response.Message || 'No se pudo cambiar la contraseña. Inténtelo de nuevo más tarde.');
+            }
+
+        } catch (error) {
+            console.log(error);
+            setErrorOutput('No pudimos procesar tu solicitud, inténtelo de nuevo más tarde.');
+        }
+
+        setLoading(false);
+
+    };
+
 
     return (
 
@@ -40,23 +91,29 @@ const OTPScreen = () => {
 
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
 
-            <Text style={styles.title}>Verifica tu correo electrónico</Text>
-            <Text style={styles.subtitle}>Hemos enviado un código a {email || 'tu correo electrónico'} </Text>
+                <Text style={styles.title}>Verifica tu correo electrónico</Text>
+                <Text style={styles.subtitle}>Hemos enviado un código a {email || 'tu correo electrónico'} </Text>
 
-            <OTPInput 
-                otp={otp}
-                timer={timer}
-                handleChange={handleChange}
-                handleResend={handleResend}
-            />
+                <OTPInput
+                    otp={otp}
+                    timer={timer}
+                    handleChange={handleChange}
+                    handleResend={handleResend}
+                />
 
-            <View style={styles.bottomSection}>
+                {errorOutput != '' && (
+                    <View style={styles.errorOutputSection}>
+                        <Text style={styles.errorOutput}>{errorOutput}</Text>
+                    </View>
+                )}
 
-                <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                    <Text style={styles.buttonText}>Continuar</Text>
-                </TouchableOpacity>
+                <View style={styles.bottomSection}>
 
-            </View>
+                    <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={loading}>
+                        <Text style={styles.buttonText}>Verificar</Text>
+                    </TouchableOpacity>
+
+                </View>
 
             </KeyboardAvoidingView>
 
@@ -72,7 +129,15 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingHorizontal: GlobalStyle.PaddingHorizontal,
         backgroundColor: '#FFFFFF',
-      },
+    },
+    errorOutputSection: {
+        marginTop: 20,
+    },
+    errorOutput: {
+        fontSize: 15,
+        color: '#ec1c1cff',
+        textAlign: 'center',
+    },
     //General
     //Header
     title: {
@@ -124,20 +189,20 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 0,
         width: '100%'
-      },
-      button: {
+    },
+    button: {
         height: 50,
         backgroundColor: Colors.light.main,
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: GlobalStyle.BorderRadius,
         marginBottom: 15,
-      },
-      buttonText: {
+    },
+    buttonText: {
         color: 'white',
         fontSize: 18,
         fontWeight: 'bold',
-      },
+    },
     //Footer
 });
 

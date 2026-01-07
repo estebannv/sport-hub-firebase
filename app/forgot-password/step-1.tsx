@@ -30,7 +30,7 @@ const ForgotPasswordStep1 = () => {
 
       setLoading(true);
       
-      const response = await AuthService.SendOTP({ Email: email });
+      const response = await AuthService.SendPasswordResetOtp({ Email: email });
 
       if (response.Status == 200) {
         router.push({

@@ -1,5 +1,7 @@
-import PasswordStrength from '@/components/PasswordStrength';
+import AuthService from '@/services/auth.service';
 import ValidationService from '@/services/validation.service';
+import EncryptionUtil from '@/utils/encryption.util';
+import { FontAwesome } from '@expo/vector-icons';
 import AntDesign from '@expo/vector-icons/build/AntDesign';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -27,6 +29,8 @@ const RegisterScreen = () => {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [passwordIsValid, setPasswordIsValid] = useState(false);
+  const [errorOutput, setErrorOutput] = useState('');
+  const [loading, setLoading] = useState(false);
 
   // useEffect(() => {
   // FillProvinceDropdown();
@@ -76,11 +80,12 @@ const RegisterScreen = () => {
   //   }
   // };
 
-  const HandlePreRegister = () => {
+  const HandlePreRegister = async () => {
     // Limpiar errores previos
     setFullNameError('');
     setEmailError('');
     setPasswordError('');
+    setErrorOutput('');
 
     // Validar cada campo individualmente
     const fullNameValidation = ValidationService.validateFullName(fullName);
@@ -108,10 +113,30 @@ const RegisterScreen = () => {
       return;
     }
 
-    router.push({
-      pathname: '/registration/step-2',
-      params: { email: email }
-    });
+    try {
+      setLoading(true);
+
+      var passwordEncrypted = EncryptionUtil.Encrypt(password);
+      var response = await AuthService.UserExists(email);
+
+      if (response.Status == 200) {
+
+        await AuthService.SendRegistrationOtp({ Email: email });
+
+        router.push({
+          pathname: '/registration/step-2',
+          params: { email: email, fullName: fullName, password: passwordEncrypted.encryptedData }
+        });
+        
+      } else {
+        setErrorOutput(response.Message || 'No se pudo completar el registro. Inténtelo de nuevo más tarde.');
+      }
+    } catch (error) {
+      console.log(error);
+      setErrorOutput('No pudimos procesar tu solicitud, inténtelo de nuevo más tarde.');
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -120,85 +145,91 @@ const RegisterScreen = () => {
 
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
 
-      <View style={styles.header}>
-        <Text style={styles.title}>Crear cuenta</Text>
-        <Text style={styles.subtitle}>Ingresa tus datos para empezar a explorar</Text>
-      </View>
+        <View style={styles.header}>
+          <Text style={styles.title}>Crear cuenta</Text>
+          <Text style={styles.subtitle}>Ingresa tus datos para empezar a explorar</Text>
+        </View>
 
-      <View>
-        <TextInput
-          style={[styles.input, fullNameError !== '' && styles.inputError]}
-          placeholder="Nombre completo"
-          placeholderTextColor={Colors.light.placeholder}
-          value={fullName}
-          onChangeText={(text) => {
-            setFullName(text);
-            if (fullNameError !== '') {
-              setFullNameError('');
-            }
-          }}
-        />
-        {fullNameError !== '' && (
-          <Text style={styles.errorText}>{fullNameError}</Text>
-        )}
-      </View>
+        <View>
+          <TextInput
+            style={[styles.input, fullNameError !== '' && styles.inputError]}
+            placeholder="Nombre completo"
+            placeholderTextColor={Colors.light.placeholder}
+            value={fullName}
+            onChangeText={(text) => {
+              setFullName(text);
+              if (fullNameError !== '') {
+                setFullNameError('');
+              }
+            }}
+          />
+          {fullNameError !== '' && (
+            <Text style={styles.errorText}>{fullNameError}</Text>
+          )}
+        </View>
 
-      <View>
-        <TextInput
-          style={[styles.input, emailError !== '' && styles.inputError]}
-          placeholder="Correo electrónico"
-          placeholderTextColor={Colors.light.placeholder}
-          value={email}
-          onChangeText={(text) => {
-            setEmail(text);
-            if (emailError !== '') {
-              setEmailError('');
-            }
-          }}
-          keyboardType="email-address"
-        />
-        {emailError !== '' && (
-          <Text style={styles.errorText}>{emailError}</Text>
-        )}
-      </View>
+        <View>
+          <TextInput
+            style={[styles.input, emailError !== '' && styles.inputError]}
+            placeholder="Correo electrónico"
+            placeholderTextColor={Colors.light.placeholder}
+            value={email}
+            onChangeText={(text) => {
+              setEmail(text);
+              if (emailError !== '') {
+                setEmailError('');
+              }
+            }}
+            keyboardType="email-address"
+          />
+          {emailError !== '' && (
+            <Text style={styles.errorText}>{emailError}</Text>
+          )}
+        </View>
 
-      <View>
+        <View>
 
-        <TextInput
-          style={[styles.input, passwordError !== '' && styles.inputError]}
-          placeholder="Contraseña"
-          placeholderTextColor={Colors.light.placeholder}
-          value={password}
-          onChangeText={(text) => {
-            setPassword(text);
-            if (passwordError !== '') {
-              setPasswordError('');
-            }
-          }}
-          secureTextEntry={!passwordVisible}
-        />
+          <TextInput
+            style={[styles.input, passwordError !== '' && styles.inputError]}
+            placeholder="Contraseña"
+            placeholderTextColor={Colors.light.placeholder}
+            value={password}
+            onChangeText={(text) => {
+              setPassword(text);
+              if (passwordError !== '') {
+                setPasswordError('');
+              }
+            }}
+            secureTextEntry={!passwordVisible}
+          />
 
-        <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)} style={styles.passwordToggle}>
-						<Text style={styles.passwordToggleText}>
-							{passwordVisible ? 
-								<AntDesign name="eye-invisible" size={24} color="black" /> : 
-								<AntDesign name="eye" size={24} color="black" />
-							}
-						</Text>
-					</TouchableOpacity>
+          <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)} style={styles.passwordToggle}>
+            <Text style={styles.passwordToggleText}>
+              {passwordVisible ?
+                <AntDesign name="eye-invisible" size={24} color="black" /> :
+                <AntDesign name="eye" size={24} color="black" />
+              }
+            </Text>
+          </TouchableOpacity>
 
-        {passwordError !== '' && (
-          <Text style={styles.errorText}>{passwordError}</Text>
-        )}
+          {passwordError !== '' && (
+            <Text style={styles.errorText}>{passwordError}</Text>
+          )}
 
-      </View>
+        </View>
 
-      <PasswordStrength 
+        {/*PasswordStrength 
         password={password} 
         onValidationChange={setPasswordIsValid}
-      />
+      />*/}
 
-      {/* <Dropdown
+        {errorOutput !== '' && (
+          <View style={styles.errorOutputSection}>
+            <Text style={styles.errorOutput}>{errorOutput}</Text>
+          </View>
+        )}
+
+        {/* <Dropdown
                     style={styles.input}
                     data={provinceArray}
                     labelField="label"
@@ -231,35 +262,44 @@ const RegisterScreen = () => {
                     placeholderStyle={{ color: Colors.light.icon }}
                   /> */}
 
-      {passwordIsValid === false && (
-        <Text style={styles.errorText}>{passwordError}</Text>
-      )}
+        {passwordIsValid === false && (
+          <Text style={styles.errorText}>{passwordError}</Text>
+        )}
 
-      <View style={styles.bottomSection}>
+        <View style={styles.bottomSection}>
 
-      <View style={styles.loginPrompt}>
-          <Text style={[styles.loginPromptText, {textAlign: 'center'}]}>
-            Al registrarse, aceptas nuestros 
-            <Text style={{ color: Colors.light.main, fontWeight: 'bold' }} onPress={() => router.push('/login')}> términos y condiciones</Text>
-          </Text>
-            
-        </View>
+          <View style={styles.loginPrompt}>
+            <Text style={[styles.loginPromptText, { textAlign: 'center' }]}>
+              Al registrarse, aceptas nuestros
+              <Text style={{ color: Colors.light.main, fontWeight: 'bold' }} onPress={() => router.push('/login')}> términos y condiciones</Text>
+            </Text>
 
-        <TouchableOpacity style={styles.registerButton} onPress={HandlePreRegister}>
-          <Text style={styles.registerButtonText}>Continuar</Text>
-        </TouchableOpacity>
+          </View>
 
-        <View style={styles.loginPrompt}>
-          <Text style={styles.loginPromptText}>¿Ya tienes una cuenta?</Text>
-          <TouchableOpacity onPress={() => router.push('/login')}>
-            <Text style={styles.loginLink}>Iniciar Sesión</Text>
+          <TouchableOpacity 
+            style={[styles.registerButton, loading && styles.disabled]} 
+            onPress={HandlePreRegister}
+            disabled={loading}
+          >
+            <Text style={styles.registerButtonText}>Continuar</Text>
           </TouchableOpacity>
-        </View>
 
-      </View>
+          <TouchableOpacity style={styles.secondaryButton} /*onPress={handleLogin}*/>
+            <FontAwesome name="google" size={24} color="black" />
+            <Text style={styles.secondaryButtonText}>Registrarse con Google</Text>
+          </TouchableOpacity>
+
+          <View style={styles.loginPrompt}>
+            <Text style={styles.loginPromptText}>¿Ya tienes una cuenta?</Text>
+            <TouchableOpacity onPress={() => router.push('/login')}>
+              <Text style={styles.loginLink}>Iniciar Sesión</Text>
+            </TouchableOpacity>
+          </View>
+
+        </View>
 
       </KeyboardAvoidingView>
-      
+
     </SafeAreaView>
   );
 };
@@ -284,22 +324,22 @@ const styles = StyleSheet.create({
     borderColor: '#ec1c1cff',
   },
   //General
-  	//Header
-	header: {
-		marginTop: 10,
-		marginBottom: 15,
-	},
-	title: {
-		fontSize: GlobalStyle.TitleFontSize,
-		fontWeight: 'bold',
-		color: Colors.light.text,
-	},
-	subtitle: {
-		fontSize: GlobalStyle.LabelFontSize,
-		color: Colors.light.text,
-		marginBottom: 20,
-	},
-	//Header
+  //Header
+  header: {
+    marginTop: 10,
+    marginBottom: 15,
+  },
+  title: {
+    fontSize: GlobalStyle.TitleFontSize,
+    fontWeight: 'bold',
+    color: Colors.light.text,
+  },
+  subtitle: {
+    fontSize: GlobalStyle.LabelFontSize,
+    color: Colors.light.text,
+    marginBottom: 20,
+  },
+  //Header
   //Password toggle
   passwordToggle: {
     position: 'absolute',
@@ -326,7 +366,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: GlobalStyle.BorderRadius,
-    marginBottom: 25,
+    marginBottom: 12,
   },
   registerButtonText: {
     color: 'white',
@@ -337,7 +377,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 25,
+    marginBottom: 20,
   },
   loginPromptText: {
     fontSize: GlobalStyle.LabelFontSize,
@@ -349,12 +389,38 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 6,
   },
+  secondaryButton: {
+    flexDirection: 'row',
+    gap: 10,
+    height: 50,
+    backgroundColor: Colors.light.secondary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: GlobalStyle.BorderRadius,
+    marginBottom: 20,
+  },
+  secondaryButtonText: {
+    color: Colors.light.text,
+    fontSize: GlobalStyle.ButtomTextFontSize,
+    fontWeight: 'bold',
+  },
   //Footer
   errorText: {
     fontSize: 14,
     color: '#ec1c1cff',
     marginBottom: 12,
     marginLeft: 4,
+  },
+  errorOutputSection: {
+    marginBottom: 16,
+  },
+  errorOutput: {
+    fontSize: 15,
+    color: '#ec1c1cff',
+    textAlign: 'center',
+  },
+  disabled: {
+    opacity: 0.7,
   },
   // dropdown: {
   //   height: 50,

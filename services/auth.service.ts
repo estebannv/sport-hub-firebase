@@ -22,10 +22,27 @@ const AuthService = {
 
   },
 
-  async SendOTP(payload: { Email: string }): Promise<ApiResponse<string>> {
+  async SendRegistrationOtp(payload: { Email: string }): Promise<ApiResponse<string>> {
 
     // const url = `${api}/auth/send-otp`;
-    const url = `http://localhost:8090/auth/send-otp`;
+    const url = `http://localhost:8090/auth/otp/registration`;
+
+    var response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+    return HandleResponse<string>(response);
+
+  },
+
+  async SendPasswordResetOtp(payload: { Email: string }): Promise<ApiResponse<string>> {
+
+    // const url = `${api}/auth/send-otp`;
+    const url = `http://localhost:8090/auth/otp/password-reset`;
 
     var response = await fetch(url, {
         method: 'POST',
@@ -50,6 +67,40 @@ const AuthService = {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload)
+      });
+
+    return HandleResponse<string>(response);
+
+  },
+
+  async Register(payload: { FullName: string, Email: string, Password: string, Otp: string }): Promise<ApiResponse<string>> {
+
+    // const url = `${api}/auth/register`;
+    const url = `http://localhost:8090/auth/register`;
+
+    var response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+    return HandleResponse<string>(response);
+
+  },
+
+  async UserExists(email: string): Promise<ApiResponse<string>> {
+
+    // const url = `${api}/auth/register`;
+    const url = `http://localhost:8090/auth/user/exists`;
+
+    var response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(email)
       });
 
     return HandleResponse<string>(response);
