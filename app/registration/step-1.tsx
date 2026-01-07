@@ -1,3 +1,4 @@
+import PasswordStrength from '@/components/PasswordStrength';
 import AuthService from '@/services/auth.service';
 import ValidationService from '@/services/validation.service';
 import EncryptionUtil from '@/utils/encryption.util';
@@ -109,6 +110,10 @@ const RegisterScreen = () => {
       hasErrors = true;
     }
 
+    if (!passwordIsValid) {
+      hasErrors = true;
+    }
+
     if (hasErrors) {
       return;
     }
@@ -127,7 +132,7 @@ const RegisterScreen = () => {
           pathname: '/registration/step-2',
           params: { email: email, fullName: fullName, password: passwordEncrypted.encryptedData }
         });
-        
+
       } else {
         setErrorOutput(response.Message || 'No se pudo completar el registro. Inténtelo de nuevo más tarde.');
       }
@@ -218,10 +223,10 @@ const RegisterScreen = () => {
 
         </View>
 
-        {/*PasswordStrength 
-        password={password} 
-        onValidationChange={setPasswordIsValid}
-      />*/}
+        <PasswordStrength
+          password={password}
+          onValidationChange={setPasswordIsValid}
+        />
 
         {errorOutput !== '' && (
           <View style={styles.errorOutputSection}>
@@ -262,10 +267,6 @@ const RegisterScreen = () => {
                     placeholderStyle={{ color: Colors.light.icon }}
                   /> */}
 
-        {passwordIsValid === false && (
-          <Text style={styles.errorText}>{passwordError}</Text>
-        )}
-
         <View style={styles.bottomSection}>
 
           <View style={styles.loginPrompt}>
@@ -276,8 +277,8 @@ const RegisterScreen = () => {
 
           </View>
 
-          <TouchableOpacity 
-            style={[styles.registerButton, loading && styles.disabled]} 
+          <TouchableOpacity
+            style={[styles.registerButton, loading && styles.disabled]}
             onPress={HandlePreRegister}
             disabled={loading}
           >
