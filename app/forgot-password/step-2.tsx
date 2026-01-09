@@ -11,7 +11,7 @@ const ForgotPasswordStep2 = () => {
 
   const { email } = useLocalSearchParams<{ email: string }>();
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const [timer, setTimer] = useState(30);
+  const [timer, setTimer] = useState(59);
   const [password, setPassword] = useState('');
   const [errorOutput, setErrorOutput] = useState('');
   const [loading, setLoading] = useState(false);

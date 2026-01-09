@@ -10,7 +10,7 @@ const OTPScreen = () => {
 
     const { email, fullName, password } = useLocalSearchParams<{ email: string, fullName: string, password: string }>();
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
-    const [timer, setTimer] = useState(30);
+    const [timer, setTimer] = useState(59);
     const [loading, setLoading] = useState(false);
     const [errorOutput, setErrorOutput] = useState('');
 
@@ -69,7 +69,7 @@ const OTPScreen = () => {
                 Otp: otpCode
             });
 
-            if (response.Status == 200) {
+            if (response.Status == 201) {
                 router.push('/(tabs)/home');
             } else {
                 setErrorOutput(response.Message || 'No se pudo cambiar la contraseña. Inténtelo de nuevo más tarde.');
@@ -102,7 +102,7 @@ const OTPScreen = () => {
                 />
 
                 {errorOutput != '' && (
-                    <View style={styles.errorOutputSection}>
+                    <View>
                         <Text style={styles.errorOutput}>{errorOutput}</Text>
                     </View>
                 )}
@@ -129,9 +129,6 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingHorizontal: GlobalStyle.PaddingHorizontal,
         backgroundColor: '#FFFFFF',
-    },
-    errorOutputSection: {
-        marginTop: 20,
     },
     errorOutput: {
         fontSize: 15,

@@ -1,14 +1,14 @@
 import { ApiResponse } from "@/types/api-response.type";
 import { HandleResponse } from "@/utils/api-response.utils";
+import Constants from 'expo-constants';
 
-const api = process.env.API_URL + '/auth';
+const api = `${Constants.expoConfig?.extra?.apiUrl}/auth`;
 
 const AuthService = {
 
   async SignIn(payload: Record<string, any>): Promise<ApiResponse<string>> {
 
-    // const url = `${api}/auth/sign-in`;
-    const url = `http://localhost:8090/auth/sign-in`;
+    const url = `${api}/sign-in`;
 
     var response = await fetch(url, {
         method: 'POST',
@@ -24,8 +24,7 @@ const AuthService = {
 
   async SendRegistrationOtp(payload: { Email: string }): Promise<ApiResponse<string>> {
 
-    // const url = `${api}/auth/send-otp`;
-    const url = `http://localhost:8090/auth/otp/registration`;
+    const url = `${api}/otp/registration`;
 
     var response = await fetch(url, {
         method: 'POST',
@@ -41,8 +40,7 @@ const AuthService = {
 
   async SendPasswordResetOtp(payload: { Email: string }): Promise<ApiResponse<string>> {
 
-    // const url = `${api}/auth/send-otp`;
-    const url = `http://localhost:8090/auth/otp/password-reset`;
+    const url = `${api}/otp/password-reset`;
 
     var response = await fetch(url, {
         method: 'POST',
@@ -58,8 +56,7 @@ const AuthService = {
 
   async ChangePassword(payload: { Email: string, Password: string, OTP: string }): Promise<ApiResponse<string>> {
 
-    // const url = `${api}/auth/change-password`;
-    const url = `http://localhost:8090/auth/change-password`;
+    const url = `${api}/change-password`;
 
     var response = await fetch(url, {
         method: 'POST',
@@ -75,8 +72,7 @@ const AuthService = {
 
   async Register(payload: { FullName: string, Email: string, Password: string, Otp: string }): Promise<ApiResponse<string>> {
 
-    // const url = `${api}/auth/register`;
-    const url = `http://localhost:8090/auth/register`;
+    const url = `${api}/register`;
 
     var response = await fetch(url, {
         method: 'POST',
@@ -92,15 +88,13 @@ const AuthService = {
 
   async UserExists(email: string): Promise<ApiResponse<string>> {
 
-    // const url = `${api}/auth/register`;
-    const url = `http://localhost:8090/auth/user/exists`;
+    const url = `${api}/user/exists?email=${email}`;
 
     var response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(email)
+        }
       });
 
     return HandleResponse<string>(response);

@@ -1,8 +1,9 @@
+import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import { ApiResponse } from '../types/api-response.type';
 import { LocationType } from '../types/location.type';
 
-const api = process.env.API_URL + 'location';
+const api = `${Constants.expoConfig?.extra?.apiUrl}/location`;
 
 const handleResponse = async <T>(response: Response): Promise<T> => {
 
