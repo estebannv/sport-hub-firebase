@@ -22,7 +22,7 @@ const AuthService = {
 
   },
 
-  async SendRegistrationOtp(payload: { Email: string }): Promise<ApiResponse<string>> {
+  async SendRegistrationOtp(payload: { Email: string, FullName: string }): Promise<ApiResponse<string>> {
 
     const url = `${api}/otp/registration`;
 

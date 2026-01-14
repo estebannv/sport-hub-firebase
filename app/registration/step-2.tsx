@@ -37,7 +37,7 @@ const OTPScreen = () => {
             const response = await AuthService.SendRegistrationOtp({ Email: email });
 
             if (response.Status == 200) {
-                setTimer(30);
+                setTimer(59);
             } else {
                 setErrorOutput(response.Message || 'No se pudo reenviar el código. Inténtelo de nuevo más tarde.');
             }

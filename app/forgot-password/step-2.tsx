@@ -28,6 +28,7 @@ const ForgotPasswordStep2 = () => {
   const handleSubmit = async () => {
 
     if (!passwordIsValid) {
+      setErrorOutput('La contraseña no es válida. Por favor, ingrese una contraseña válida.');
       return;
     }
 
@@ -73,7 +74,7 @@ const ForgotPasswordStep2 = () => {
       const response = await AuthService.SendPasswordResetOtp({ Email: email });
 
       if (response.Status == 200) {
-        setTimer(30);
+        setTimer(59);
       } else {
         setErrorOutput(response.Message || 'No se pudo reenviar el código. Inténtelo de nuevo más tarde.');
       }
@@ -103,7 +104,7 @@ const ForgotPasswordStep2 = () => {
             />
 
         <TextInput
-          style={styles.input}
+          style={[styles.input, passwordIsValid === false && { borderColor: '#ec1c1cff' }]}
           placeholder="Contraseña"
           placeholderTextColor={Colors.light.placeholder}
           value={password}
@@ -116,7 +117,7 @@ const ForgotPasswordStep2 = () => {
           onValidationChange={setPasswordIsValid}
         />
 
-        {passwordIsValid === false && (
+        {(passwordIsValid === false || errorOutput !== '') && (
           <View style={styles.errorOutputSection}>
             <Text style={styles.errorOutput}>{errorOutput}</Text>
           </View>

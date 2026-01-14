@@ -121,13 +121,12 @@ const RegisterScreen = () => {
     try {
       setLoading(true);
 
-      var passwordEncrypted = EncryptionUtil.Encrypt(password);
-      var response = await AuthService.UserExists(email);
-
+      var response = await AuthService.SendRegistrationOtp({ Email: email, FullName: fullName });
+      
       if (response.Status == 200) {
 
-        await AuthService.SendRegistrationOtp({ Email: email });
-
+        var passwordEncrypted = EncryptionUtil.Encrypt(password);
+        
         router.push({
           pathname: '/registration/step-2',
           params: { email: email, fullName: fullName, password: passwordEncrypted.encryptedData }
@@ -228,7 +227,7 @@ const RegisterScreen = () => {
           onValidationChange={setPasswordIsValid}
         />
 
-        {errorOutput !== '' && (
+        {(passwordIsValid === false || errorOutput !== '') && (
           <View style={styles.errorOutputSection}>
             <Text style={styles.errorOutput}>{errorOutput}</Text>
           </View>
