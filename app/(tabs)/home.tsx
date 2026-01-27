@@ -1,30 +1,17 @@
+import { CommonService, IParameter } from '@/services/common.service';
 import LocationService from '@/services/location.service';
+import StorageService from '@/services/storage.service';
 import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Link } from 'expo-router';
+import { Link, useFocusEffect, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from '../../components/home/Card';
-import { CategoryCarousel } from '../../components/home/CategoryCarousel';
+import { CategoryCarousel } from '../../components/home/carousel-category.component';
 import { Colors, GlobalStyle } from '../../constants/theme';
-
-const sportsCategories = [
-  { id: '1', name: 'Fútbol', icon: '⚽' },
-  { id: '2', name: 'Basket', icon: '🏀' },
-  { id: '3', name: 'Tenis', icon: '🎾' },
-  { id: '4', name: 'Pádel', icon: '🏸' },
-  { id: '5', name: 'Gym', icon: '🏋️' },
-  { id: '6', name: 'Boxeo', icon: '🥊' },
-  { id: '7', name: 'Fútbol', icon: '⚽' },
-  { id: '8', name: 'Basket', icon: '🏀' },
-  { id: '9', name: 'Tenis', icon: '🎾' },
-  { id: '10', name: 'Pádel', icon: '🏸' },
-  { id: '11', name: 'Gym', icon: '🏋️' },
-  { id: '12', name: 'Boxeo', icon: '🥊' },
-];
 
 const featuredCenters = [
   { id: '1', name: 'Super Padel Center', rating: 4.9, reviews: 500, deliveryTime: 15, image: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=500&q=80' },
@@ -34,22 +21,81 @@ const featuredCenters = [
 
 const HomeScreen = () => {
 
+  const router = useRouter();
   const [city, setCity] = useState('Buscando ubicación...');
   const [country, setCountry] = useState('');
+  const [categories, setCategories] = useState<IParameter[]>([]);
 
   const LoadLocation = async () => {
+    try {
+      // Primero intentar cargar la ubicación guardada
+      const savedLocation = await StorageService.getSavedLocation();
+      
+      if (savedLocation && savedLocation.city) {
+        setCity(savedLocation.city);
+        setCountry(savedLocation.country || '');
+        return;
+      }
 
-    const result = await LocationService.GetCurrentPosition();
-
-    if (result) {
-      setCity(result.city || 'Ubicación no encontrada');
-      setCountry(result.country || '');
+      // Si no hay ubicación guardada, verificar si es la primera vez
+      const hasAskedLocation = await StorageService.hasAskedLocation();
+      
+      if (!hasAskedLocation) {
+        // Es la primera vez, pedir la ubicación
+        const result = await LocationService.GetCurrentPosition();
+        
+        if (result && result.city) {
+          setCity(result.city);
+          setCountry(result.country || '');
+          
+          // Crear objeto de ubicación
+          const locationId = Date.now().toString();
+          const newLocation = {
+            city: result.city,
+            country: result.country || '',
+            name: result.city,
+            id: locationId,
+          };
+          
+          // Guardar la ubicación actual
+          await StorageService.saveLocation(newLocation);
+          
+          // Guardar también en la lista de ubicaciones
+          const savedLocations = await StorageService.getSavedLocations();
+          await StorageService.saveLocations([...savedLocations, newLocation]);
+        } else {
+          setCity(result?.error || 'Ubicación no encontrada');
+        }
+        
+        // Marcar que ya se pidió la ubicación
+        await StorageService.setHasAskedLocation();
+      } else {
+        // Ya se pidió antes pero no hay ubicación guardada
+        setCity('Selecciona una ubicación');
+      }
+    } catch (error) {
+      console.error('Error cargando ubicación:', error);
+      setCity('Error al cargar ubicación');
     }
-
   };
+
+  const LoadCategories = async () => {
+
+    const result = await CommonService.Parameters('categories');
+    setCategories(result?.Data || []);
+    
+  };
+
+  // Recargar ubicación cuando la pantalla recibe foco (cuando regresa de locations)
+  useFocusEffect(
+    useCallback(() => {
+      LoadLocation();
+    }, [])
+  );
 
   useEffect(() => {
     LoadLocation();
+    LoadCategories();
   }, []);
 
   return (
@@ -64,7 +110,10 @@ const HomeScreen = () => {
           <Link href="/home" asChild>
             <Text style={styles.topBarTitle}>SportHub</Text>
           </Link>
-          <TouchableOpacity style={styles.topBarLocationContainer}>
+          <TouchableOpacity 
+            style={styles.topBarLocationContainer}
+            onPress={() => router.push('/locations' as any)}
+          >
             <FontAwesome6 style={styles.topBarIcon} name="location-dot" color={Colors.light.main} />
             <View>
               <Text style={styles.topBarLocationDetail}>{city}</Text>
@@ -84,9 +133,9 @@ const HomeScreen = () => {
         </Link>
 
         <FlatList
-          data={sportsCategories}
+          data={categories}
           renderItem={({ item }) => <CategoryCarousel item={item} />}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item._id}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.featuredCategories}

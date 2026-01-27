@@ -1,13 +1,14 @@
 
+import { IParameter } from '@/services/common.service';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export const CategoryCarousel = ({ item }: { item: { name: string, icon: string } }) => (
+export const CategoryCarousel = ({ item }: { item: IParameter }) => (
   <TouchableOpacity style={styles.container}>
     <View style={styles.iconContainer}>
-      <Text style={styles.icon}>{item.icon}</Text>
+      <Text style={styles.icon}>⚽</Text>
     </View>
-    <Text style={styles.label}>{item.name}</Text>
+    <Text style={styles.label}>{item.Value}</Text>
   </TouchableOpacity>
 );
 
