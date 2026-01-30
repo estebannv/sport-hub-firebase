@@ -1,11 +1,12 @@
 import AuthService from '@/services/auth.service';
+import LocationService from '@/services/location.service';
 import ValidationService from '@/services/validation.service';
 import EncryptionUtil from '@/utils/encryption.util';
 import AntDesign from '@expo/vector-icons/build/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Fonts, GlobalStyle } from '../constants/theme';
@@ -20,6 +21,14 @@ const LoginScreen = () => {
 	const [errorOutput, setErrorOutput] = useState('');
 	const [passwordVisible, setPasswordVisible] = useState(false);
 	const [loading, setLoading] = useState(false);
+
+	const LoadLocation = async () => {
+		await LocationService.LoadUserLocation();
+	};
+
+	useEffect(() => {
+		LoadLocation();
+	}, []);
 
 	const handleLogin = async () => {
 

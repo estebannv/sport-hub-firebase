@@ -40,39 +40,6 @@ export const LocationService = {
     return handleResponse<LocationType[]>(await fetch(url));
   },
 
-  async GetCurrentPosition() {
-
-    try {
-
-      const { status } = await Location.requestForegroundPermissionsAsync();
-
-      if (status !== 'granted') {
-        return {
-          city: null,
-          country: null,
-          error: 'No se concedió permiso de ubicación'
-        };
-      }
-
-      const location = await Location.getCurrentPositionAsync({});
-      const geocode = await Location.reverseGeocodeAsync(location.coords);
-
-      if (geocode?.length > 0) {
-        const { city, country } = geocode[0];
-        return { City: city, Country: country, Latitude: location.coords.latitude, Longitude: location.coords.longitude };
-      }
-
-    } catch (error) {
-      console.error(`File: location.service.ts. Method: GetCurrentPosition. Error: ${error}`);
-    }
-
-    return {
-        city: null,
-        country: null,
-        error: 'Ubicación no encontrada'
-      };
-  },
-
   async SaveLocation(location: ILocation): Promise<ApiResponse<string>> {
 
     const response = await fetch(api, {
@@ -112,35 +79,48 @@ export const LocationService = {
 
   async LoadUserLocation(): Promise<ILocation | null> {
     
-      const hasAskedLocation = await StorageService.Get(Keys.HasAskedLocation);
-      
-      if (!hasAskedLocation) {
+    try {
 
-        const result = await this.GetCurrentPosition();
-        
-        if (result) {
+      const locationData = await StorageService.Get<ILocation>(Keys.Location);
 
-          const newLocation: ILocation = {
-            City: result.city || '',
-            Country: result.country || '',
-            Latitude: result.Latitude || 0,
-            Longitude: result.Longitude || 0
-          };
-          
-          const response = await this.SaveLocation(newLocation);
-
-          if (response.Successful) {
-            await StorageService.Save(Keys.HasAskedLocation, 'true');
-            return newLocation;
-          } else {
-            await StorageService.Save(Keys.HasAskedLocation, 'false');
-          }
-        }
-
+      if (locationData) {
+        return locationData as ILocation;
       }
-      return null;
-    }
 
+      const { status } = await Location.requestForegroundPermissionsAsync();
+
+      if (status !== 'granted') {
+        throw new Error('Permission not granted');
+      }
+
+      const location = await Location.getCurrentPositionAsync({});
+      const geocode = await Location.reverseGeocodeAsync(location.coords);
+      
+      if (geocode?.length > 0) {
+
+        const { city, country } = geocode[0];
+
+        const newLocation: ILocation = {
+          City: city || '',
+          Country: country || '',
+          Latitude: location.coords.latitude,
+          Longitude: location.coords.longitude
+        };
+
+        const response = await this.SaveLocation(newLocation);
+
+        if (response.Successful) {
+          await StorageService.Set(Keys.Location, JSON.stringify(newLocation));
+          return newLocation;
+        } 
+        throw new Error(response.Message || 'Failed to save location');
+      }
+      
+    } catch (error) {
+      console.error('Error loading user location:', error);
+    }
+    return null;
+  },
 };
 
 export default LocationService;

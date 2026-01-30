@@ -1,12 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 enum Keys {
-  HasAskedLocation,
+  Location,
 };
 
 const StorageService = {
 
-  async Save(key: Keys, value: string): Promise<void> {
+  async Set(key: Keys, value: string): Promise<void> {
     try {
       await AsyncStorage.setItem(key.toString(), value);
     } catch (error) {

@@ -1,12 +1,11 @@
 import { CommonService, IParameter } from '@/services/common.service';
 import LocationService from '@/services/location.service';
-import StorageService from '@/services/storage.service';
 import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Link, useFocusEffect, useRouter } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from '../../components/home/Card';
@@ -22,76 +21,20 @@ const featuredCenters = [
 const HomeScreen = () => {
 
   const router = useRouter();
-  const [city, setCity] = useState('Buscando ubicación...');
-  const [country, setCountry] = useState('');
   const [categories, setCategories] = useState<IParameter[]>([]);
-
-  const LoadLocation = async () => {
-    try {
-      // Primero intentar cargar la ubicación guardada
-      const savedLocation = await StorageService.getSavedLocation();
-      
-      if (savedLocation && savedLocation.city) {
-        setCity(savedLocation.city);
-        setCountry(savedLocation.country || '');
-        return;
-      }
-
-      // Si no hay ubicación guardada, verificar si es la primera vez
-      const hasAskedLocation = await StorageService.hasAskedLocation();
-      
-      if (!hasAskedLocation) {
-        // Es la primera vez, pedir la ubicación
-        const result = await LocationService.GetCurrentPosition();
-        
-        if (result && result.city) {
-          setCity(result.city);
-          setCountry(result.country || '');
-          
-          // Crear objeto de ubicación
-          const locationId = Date.now().toString();
-          const newLocation = {
-            city: result.city,
-            country: result.country || '',
-            name: result.city,
-            id: locationId,
-          };
-          
-          // Guardar la ubicación actual
-          await StorageService.saveLocation(newLocation);
-          
-          // Guardar también en la lista de ubicaciones
-          const savedLocations = await StorageService.getSavedLocations();
-          await StorageService.saveLocations([...savedLocations, newLocation]);
-        } else {
-          setCity(result?.error || 'Ubicación no encontrada');
-        }
-        
-        // Marcar que ya se pidió la ubicación
-        await StorageService.setHasAskedLocation();
-      } else {
-        // Ya se pidió antes pero no hay ubicación guardada
-        setCity('Selecciona una ubicación');
-      }
-    } catch (error) {
-      console.error('Error cargando ubicación:', error);
-      setCity('Error al cargar ubicación');
-    }
-  };
+  const [city, setCity] = useState<string>('');
+  const [country, setCountry] = useState<string>('');
 
   const LoadCategories = async () => {
-
     const result = await CommonService.Parameters('categories');
     setCategories(result?.Data || []);
-    
   };
 
-  // Recargar ubicación cuando la pantalla recibe foco (cuando regresa de locations)
-  useFocusEffect(
-    useCallback(() => {
-      LoadLocation();
-    }, [])
-  );
+  const LoadLocation = async () => {
+    const result = await LocationService.LoadUserLocation();
+    setCity(result?.City || '');
+    setCountry(result?.Country || '');
+  };
 
   useEffect(() => {
     LoadLocation();
