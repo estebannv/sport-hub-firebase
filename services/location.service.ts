@@ -3,6 +3,7 @@ import * as Location from 'expo-location';
 import { ApiResponse } from '../types/api-response.type';
 import { LocationType } from '../types/location.type';
 import { HandleResponse } from '../utils/api-response.utils';
+import { getAuthHeaders } from '../utils/auth-headers.utils';
 import { Keys, StorageService } from './storage.service';
 
 const api = `${Constants.expoConfig?.extra?.apiUrl}/location`;
@@ -23,30 +24,32 @@ const handleResponse = async <T>(response: Response): Promise<T> => {
   return json?.Data;
 };
 
+
 export const LocationService = {
 
   async GetProvinces(): Promise<LocationType[]> {
     const url = `${api}?provinceId=0&cityId=0`;
-    return handleResponse<LocationType[]>(await fetch(url));
+    const headers = await getAuthHeaders();
+    return handleResponse<LocationType[]>(await fetch(url, { headers }));
   },
 
   async GetCities(provinceId: number): Promise<LocationType[]> {
     const url = `${api}?provinceId=${provinceId}&cityId=0`;
-    return handleResponse<LocationType[]>(await fetch(url));
+    const headers = await getAuthHeaders();
+    return handleResponse<LocationType[]>(await fetch(url, { headers }));
   },
 
   async GetDistricts(provinceId: number, cityId: number): Promise<LocationType[]> {
     const url = `${api}?provinceId=${provinceId}&cityId=${cityId}`;
-    return handleResponse<LocationType[]>(await fetch(url));
+    const headers = await getAuthHeaders();
+    return handleResponse<LocationType[]>(await fetch(url, { headers }));
   },
 
   async SaveLocation(location: ILocation): Promise<ApiResponse<string>> {
-
+    const headers = await getAuthHeaders();
     const response = await fetch(api, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers,
       body: JSON.stringify(location)
     });
 
@@ -54,24 +57,20 @@ export const LocationService = {
   },
 
   async GetLocations(): Promise<ApiResponse<ILocation[]>> {
-    
+    const headers = await getAuthHeaders();
     const response = await fetch(api, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      headers
     });
 
     return await HandleResponse<ILocation[]>(response);
   },
 
   async DeleteLocation(locationId: string): Promise<ApiResponse<boolean>> {
-
+    const headers = await getAuthHeaders();
     const response = await fetch(`${api}/${locationId}`, {
       method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      headers
     });
     
     return await HandleResponse<boolean>(response);

@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 enum Keys {
   Location,
+  Token,
 };
 
 const StorageService = {

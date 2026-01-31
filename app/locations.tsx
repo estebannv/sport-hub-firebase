@@ -1,11 +1,15 @@
 import { Colors } from '@/constants/theme';
-import LocationService from '@/services/location.service';
-import StorageService, { SavedLocation } from '@/services/storage.service';
+import { ILocation, LocationService } from '@/services/location.service';
+import { Keys, StorageService } from '@/services/storage.service';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { Stack, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+interface LocationWithId extends ILocation {
+  _id?: string;
+}
 
 const LocationItem = ({ 
   location, 
@@ -13,7 +17,7 @@ const LocationItem = ({
   onSelect, 
   onDelete 
 }: { 
-  location: SavedLocation; 
+  location: LocationWithId; 
   isSelected: boolean;
   onSelect: () => void;
   onDelete: () => void;
@@ -26,10 +30,10 @@ const LocationItem = ({
       <FontAwesome6 name="location-dot" size={20} color={isSelected ? Colors.light.main : '#666'} />
       <View style={styles.locationDetails}>
         <Text style={[styles.locationName, isSelected && styles.selectedText]}>
-          {location.name || location.city}
+          {location.City}
         </Text>
-        {location.country && (
-          <Text style={styles.locationCountry}>{location.country}</Text>
+        {location.Country && (
+          <Text style={styles.locationCountry}>{location.Country}</Text>
         )}
       </View>
     </View>
@@ -45,20 +49,39 @@ const LocationItem = ({
 );
 
 const LocationsScreen = () => {
+  
   const router = useRouter();
-  const [locations, setLocations] = useState<SavedLocation[]>([]);
-  const [currentLocation, setCurrentLocation] = useState<SavedLocation | null>(null);
+  const [locations, setLocations] = useState<LocationWithId[]>([]);
+  const [currentLocation, setCurrentLocation] = useState<ILocation | null>(null);
   const [loading, setLoading] = useState(false);
 
   const loadLocations = async () => {
     try {
-      const savedLocations = await StorageService.getSavedLocations();
-      const savedLocation = await StorageService.getSavedLocation();
+      // Cargar ubicaciones desde la API
+      const locationsResponse = await LocationService.GetLocations();
       
-      setLocations(savedLocations);
-      setCurrentLocation(savedLocation);
+      if (locationsResponse.Successful && locationsResponse.Data) {
+        setLocations(locationsResponse.Data as LocationWithId[]);
+      }
+      
+      // Cargar ubicación actual desde almacenamiento local
+      const savedLocationData = await StorageService.Get<ILocation>(Keys.Location);
+      if (savedLocationData) {
+        try {
+          let location: ILocation;
+          if (typeof savedLocationData === 'string') {
+            location = JSON.parse(savedLocationData) as ILocation;
+          } else {
+            location = savedLocationData as ILocation;
+          }
+          setCurrentLocation(location);
+        } catch (e) {
+          console.error('Error parsing location data:', e);
+        }
+      }
     } catch (error) {
       console.error('Error cargando ubicaciones:', error);
+      Alert.alert('Error', 'No se pudieron cargar las ubicaciones');
     }
   };
 
@@ -69,39 +92,30 @@ const LocationsScreen = () => {
   const handleAddCurrentLocation = async () => {
     setLoading(true);
     try {
-      const result = await LocationService.GetCurrentPosition();
+      // LoadUserLocation ya solicita permisos y guarda la ubicación
+      const result = await LocationService.LoadUserLocation();
       
-      if (result && result.city) {
-        const newLocation: SavedLocation = {
-          city: result.city,
-          country: result.country || '',
-          name: result.city,
-          id: Date.now().toString(),
-        };
-
-        // Agregar a la lista de ubicaciones
-        const updatedLocations = [...locations, newLocation];
-        await StorageService.saveLocations(updatedLocations);
-        
-        // Guardar como ubicación actual
-        await StorageService.saveLocation(newLocation);
-        
+      if (result) {
+        // La ubicación ya fue guardada en la API y en el almacenamiento local
+        setCurrentLocation(result);
         await loadLocations();
         Alert.alert('Éxito', 'Ubicación agregada correctamente');
       } else {
-        Alert.alert('Error', result?.error || 'No se pudo obtener la ubicación');
+        Alert.alert('Error', 'No se pudo obtener la ubicación. Verifica los permisos de ubicación.');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error agregando ubicación:', error);
-      Alert.alert('Error', 'No se pudo agregar la ubicación');
+      const errorMessage = error?.message || 'No se pudo agregar la ubicación';
+      Alert.alert('Error', errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSelectLocation = async (location: SavedLocation) => {
+  const handleSelectLocation = async (location: LocationWithId) => {
     try {
-      await StorageService.saveLocation(location);
+      // Guardar en almacenamiento local como ubicación actual
+      await StorageService.Set(Keys.Location, JSON.stringify(location));
       setCurrentLocation(location);
       Alert.alert('Éxito', 'Ubicación actualizada');
       // Regresar a la pantalla anterior después de un breve delay
@@ -114,7 +128,12 @@ const LocationsScreen = () => {
     }
   };
 
-  const handleDeleteLocation = (locationId: string) => {
+  const handleDeleteLocation = (location: LocationWithId) => {
+    if (!location._id) {
+      Alert.alert('Error', 'No se puede eliminar esta ubicación');
+      return;
+    }
+
     Alert.alert(
       'Eliminar ubicación',
       '¿Estás seguro de que deseas eliminar esta ubicación?',
@@ -125,16 +144,22 @@ const LocationsScreen = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              const updatedLocations = locations.filter(loc => loc.id !== locationId);
-              await StorageService.saveLocations(updatedLocations);
+              // Eliminar de la API
+              const deleteResponse = await LocationService.DeleteLocation(location._id!);
               
-              // Si la ubicación eliminada era la actual, limpiar la ubicación actual
-              if (currentLocation?.id === locationId) {
-                await StorageService.removeSavedLocation();
-                setCurrentLocation(null);
+              if (deleteResponse.Successful) {
+                // Si la ubicación eliminada era la actual, limpiar la ubicación actual
+                if (currentLocation && 
+                    currentLocation.City === location.City && 
+                    currentLocation.Country === location.Country) {
+                  await StorageService.Set(Keys.Location, '');
+                  setCurrentLocation(null);
+                }
+                
+                await loadLocations();
+              } else {
+                Alert.alert('Error', deleteResponse.Message || 'No se pudo eliminar la ubicación');
               }
-              
-              await loadLocations();
             } catch (error) {
               console.error('Error eliminando ubicación:', error);
               Alert.alert('Error', 'No se pudo eliminar la ubicación');
@@ -149,26 +174,32 @@ const LocationsScreen = () => {
     <SafeAreaView style={styles.safeArea}>
       <Stack.Screen options={{ title: 'Ubicaciones' }} />
       <ScrollView style={styles.container}>
-        <Text style={styles.sectionTitle}>Ubicaciones guardadas</Text>
+        <Text style={styles.sectionTitle}>Ubicación guardada</Text>
         
         {locations.length === 0 ? (
           <View style={styles.emptyState}>
             <FontAwesome6 name="location-dot" size={48} color="#ccc" />
-            <Text style={styles.emptyStateText}>No tienes ubicaciones guardadas</Text>
+            <Text style={styles.emptyStateText}>No tienes ubicacion guardada</Text>
             <Text style={styles.emptyStateSubtext}>
-              Agrega tu ubicación actual para comenzar
+              Agrega tu ubicación actual para comenzar a usar la app
             </Text>
           </View>
         ) : (
-          locations.map((location) => (
-            <LocationItem
-              key={location.id}
-              location={location}
-              isSelected={currentLocation?.id === location.id}
-              onSelect={() => handleSelectLocation(location)}
-              onDelete={() => handleDeleteLocation(location.id!)}
-            />
-          ))
+          locations.map((location, index) => {
+            const isSelected = currentLocation && 
+              currentLocation.City === location.City && 
+              currentLocation.Country === location.Country;
+            
+            return (
+              <LocationItem
+                key={location._id || `location-${index}`}
+                location={location}
+                isSelected={!!isSelected}
+                onSelect={() => handleSelectLocation(location)}
+                onDelete={() => handleDeleteLocation(location)}
+              />
+            );
+          })
         )}
 
         <TouchableOpacity 

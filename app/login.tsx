@@ -1,5 +1,6 @@
 import AuthService from '@/services/auth.service';
 import LocationService from '@/services/location.service';
+import { Keys, StorageService } from '@/services/storage.service';
 import ValidationService from '@/services/validation.service';
 import EncryptionUtil from '@/utils/encryption.util';
 import AntDesign from '@expo/vector-icons/build/AntDesign';
@@ -63,10 +64,15 @@ const LoginScreen = () => {
 			var passwordEncrypted = EncryptionUtil.Encrypt(password);
 			var response = await AuthService.SignIn({ Email: email, Password: passwordEncrypted.encryptedData });
 
-			if (response.Status == 200)
+			if (response.Status == 200) {
+				// Guardar el token de forma segura
+				if (response.Data) {
+					await StorageService.Set(Keys.Token, response.Data);
+				}
 				router.push('/(tabs)/home')
-			else
+			} else {
 				setErrorOutput(response.Message || '')
+			}
 
 		} catch (error) {
 			console.log(error)
