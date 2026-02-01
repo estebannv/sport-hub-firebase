@@ -47,7 +47,8 @@ export const LocationService = {
 
   async SaveLocation(location: ILocation): Promise<ApiResponse<string>> {
     const headers = await getAuthHeaders();
-    const response = await fetch(api, {
+    const url = `${api}/user`;
+    const response = await fetch(url, {
       method: 'POST',
       headers,
       body: JSON.stringify(location)
@@ -58,7 +59,8 @@ export const LocationService = {
 
   async GetLocations(): Promise<ApiResponse<ILocation[]>> {
     const headers = await getAuthHeaders();
-    const response = await fetch(api, {
+    const url = `${api}/user`;
+    const response = await fetch(url, {
       method: 'GET',
       headers
     });
@@ -68,7 +70,8 @@ export const LocationService = {
 
   async DeleteLocation(locationId: string): Promise<ApiResponse<boolean>> {
     const headers = await getAuthHeaders();
-    const response = await fetch(`${api}/${locationId}`, {
+    const url = `${api}/user/${locationId}`;
+    const response = await fetch(url, {
       method: 'DELETE',
       headers
     });
