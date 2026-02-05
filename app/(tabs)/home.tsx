@@ -22,7 +22,7 @@ const HomeScreen = () => {
 
   const router = useRouter();
   const [categories, setCategories] = useState<IParameter[]>([]);
-  const [city, setCity] = useState<string>('');
+  const [city, setCity] = useState<string | undefined>(undefined);
   const [country, setCountry] = useState<string>('');
 
   const LoadCategories = async () => {
@@ -31,7 +31,9 @@ const HomeScreen = () => {
   };
 
   const LoadLocation = async () => {
+
     const result = await LocationService.LoadUserLocation();
+
     setCity(result?.City || '');
     setCountry(result?.Country || '');
   };

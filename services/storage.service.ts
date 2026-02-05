@@ -16,11 +16,18 @@ const StorageService = {
     }
   },
 
-  async Get<T>(key: Keys): Promise<T | string | null> {
+  async Get<T>(key: Keys): Promise<T | null> {
+
     try {
-      return await AsyncStorage.getItem(key.toString()) as T | string | null;
-    } catch (error) {
-      console.error('Error cargando:', error);
+
+      const data = await AsyncStorage.getItem(key.toString());
+
+      if (data == null || data === '') 
+        return null;
+
+      return JSON.parse(data) as T;
+      
+    } catch {
       return null;
     }
   },

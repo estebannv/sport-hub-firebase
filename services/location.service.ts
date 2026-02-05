@@ -86,7 +86,7 @@ export const LocationService = {
       const locationData = await StorageService.Get<ILocation>(Keys.Location);
 
       if (locationData) {
-        return locationData as ILocation;
+        return locationData;
       }
 
       const { status } = await Location.requestForegroundPermissionsAsync();

@@ -8,7 +8,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Fonts, GlobalStyle } from '../constants/theme';
 
@@ -58,9 +58,9 @@ const LoginScreen = () => {
 			if (hasErrors) {
 				return;
 			}
-			
+
 			setLoading(true);
-			
+
 			var passwordEncrypted = EncryptionUtil.Encrypt(password);
 			var response = await AuthService.SignIn({ Email: email, Password: passwordEncrypted.encryptedData });
 
@@ -86,93 +86,91 @@ const LoginScreen = () => {
 
 		<SafeAreaView style={styles.container}>
 
-			<KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+			<KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }} keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}>
 
-				<View style={styles.header}>
-					<Text style={styles.title}>Iniciar sesión</Text>
-					<Text style={styles.subtitle}>Ingresa tus datos para empezar a explorar</Text>
-				</View>
-
-				<View>
-					<TextInput
-						style={[styles.input, emailError !== '' && styles.inputError]}
-						placeholder="Correo electrónico"
-						placeholderTextColor={Colors.light.placeholder}
-						value={email}
-						onChangeText={(text) => {
-							setEmail(text);
-							if (emailError !== '') {
-								setEmailError('');
-							}
-						}}
-						keyboardType="email-address"
-						autoCapitalize="none"
-					/>
-					{emailError !== '' && (
-						<Text style={styles.errorText}>{emailError}</Text>
-					)}
-				</View>
-
-				<View>
-
-					<TextInput
-						style={[styles.input, passwordError !== '' && styles.inputError]}
-						placeholder="Contraseña"
-						placeholderTextColor={Colors.light.placeholder}
-						value={password}
-						onChangeText={(text) => {
-							setPassword(text);
-							if (passwordError !== '') {
-								setPasswordError('');
-							}
-						}}
-						secureTextEntry={!passwordVisible}
-					/>
-
-					<TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)} style={styles.passwordToggle}>
-						<Text style={styles.passwordToggleText}>
-							{passwordVisible ? 
-								<AntDesign name="eye-invisible" size={24} color="black" /> : 
-								<AntDesign name="eye" size={24} color="black" />
-							}
-						</Text>
-					</TouchableOpacity>
-
-					{passwordError !== '' && (
-						<Text style={styles.errorText}>{passwordError}</Text>
-					)}
-
-				</View>
-
-				{errorOutput != '' ?
-					<View style={styles.errorOutputSection}>
-						<Ionicons style={styles.errorOutputIcon} name="alert-circle-outline" />
-						<Text style={styles.errorOutput}>{errorOutput}</Text>
+				<ScrollView
+					style={styles.scrollView}
+					keyboardShouldPersistTaps="handled"
+					showsVerticalScrollIndicator={false}
+				>
+					<View style={styles.header}>
+						<Text style={styles.title}>Iniciar sesión</Text>
+						<Text style={styles.subtitle}>Ingresa tus datos para empezar a explorar</Text>
 					</View>
 
-					: null}
+					<View>
+						<TextInput
+							style={[styles.input, emailError !== '' && styles.inputError]}
+							placeholder="Correo electrónico"
+							placeholderTextColor={Colors.light.placeholder}
+							value={email}
+							onChangeText={(text) => {
+								setEmail(text);
+								if (emailError !== '') {
+									setEmailError('');
+								}
+							}}
+							keyboardType="email-address"
+							autoCapitalize="none"
+						/>
+						{emailError !== '' && (
+							<Text style={styles.errorText}>{emailError}</Text>
+						)}
+					</View>
 
-				<TouchableOpacity style={styles.forgotPassword} onPress={() => router.push('/forgot-password/step-1')}>
-					<Text style={styles.forgotPasswordText}>¿Olvidó su contraseña?</Text>
-				</TouchableOpacity>
+					<View>
+
+						<TextInput
+							style={[styles.input, passwordError !== '' && styles.inputError]}
+							placeholder="Contraseña"
+							placeholderTextColor={Colors.light.placeholder}
+							value={password}
+							onChangeText={(text) => {
+								setPassword(text);
+								if (passwordError !== '') {
+									setPasswordError('');
+								}
+							}}
+							secureTextEntry={!passwordVisible}
+						/>
+
+						<TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)} style={styles.passwordToggle}>
+							<Text style={styles.passwordToggleText}>
+								{passwordVisible ?
+									<AntDesign name="eye-invisible" size={24} color="black" /> :
+									<AntDesign name="eye" size={24} color="black" />
+								}
+							</Text>
+						</TouchableOpacity>
+
+						{passwordError !== '' && (
+							<Text style={styles.errorText}>{passwordError}</Text>
+						)}
+
+					</View>
+
+					{errorOutput != '' ?
+						<View style={styles.errorOutputSection}>
+							<Ionicons style={styles.errorOutputIcon} name="alert-circle-outline" />
+							<Text style={styles.errorOutput}>{errorOutput}</Text>
+						</View>
+
+						: null}
+
+					<TouchableOpacity style={styles.forgotPassword} onPress={() => router.push('/forgot-password/step-1')}>
+						<Text style={styles.forgotPasswordText}>¿Olvidó su contraseña?</Text>
+					</TouchableOpacity>
 
 				<View style={styles.footer}>
 
 					<View style={styles.registerSection}>
-
 						<Text style={styles.registerSectionText}>¿No tienes una cuenta?</Text>
-
 						<TouchableOpacity onPress={() => router.push('/registration/step-1')}>
 							<Text style={styles.registerLink}>Registrarse</Text>
 						</TouchableOpacity>
-
 					</View>
 
 					<TouchableOpacity style={[styles.primaryButton, loading && styles.disabled]} onPress={handleLogin} disabled={loading} >
-						{/* {loading ? 
-							<Image source={require("../assets/loading.gif")} style={styles.gif} /> : 
-							<Text style={styles.primaryButtonText}>Iniciar sesión</Text>
-						} */}
 						<Text style={styles.primaryButtonText}>Iniciar sesión</Text>
 					</TouchableOpacity>
 
@@ -180,8 +178,10 @@ const LoginScreen = () => {
 						<FontAwesome name="google" size={24} color="black" />
 						<Text style={styles.secondaryButtonText}>Registrarse con Google</Text>
 					</TouchableOpacity>
-
+					
 				</View>
+
+				</ScrollView>
 
 			</KeyboardAvoidingView>
 
@@ -280,6 +280,7 @@ const styles = StyleSheet.create({
 	registerSection: {
 		flexDirection: 'row',
 		alignSelf: 'center',
+		marginTop: 24,
 		marginBottom: 23
 	},
 	registerSectionText: {
@@ -296,9 +297,10 @@ const styles = StyleSheet.create({
 	//Register
 	//Footer
 	footer: {
-		width: '100%',
-		position: 'absolute',
-		bottom: 10
+		marginTop: '50%',
+	},
+	scrollView: {
+		flex: 1,
 	},
 	primaryButton: {
 		height: 50,
