@@ -7,9 +7,9 @@ enum Keys {
 
 const StorageService = {
 
-  async Set(key: Keys, value: string): Promise<void> {
+  async Set(key: Keys, value: any): Promise<void> {
     try {
-      await AsyncStorage.setItem(key.toString(), value);
+      await AsyncStorage.setItem(key.toString(), JSON.stringify(value));
     } catch (error) {
       console.error('Error guardando:', error);
       throw error;
@@ -31,6 +31,26 @@ const StorageService = {
       return null;
     }
   },
+
+  async ClearStorage(): Promise<void> {
+    try {
+      await AsyncStorage.clear();
+      console.log('Storage cleared');
+    } catch (error) {
+      console.error('Error limpiando storage:', error);
+      throw error;
+    }
+  },
+
+  async ClearItem(key: Keys): Promise<void> {
+    try {
+      await AsyncStorage.removeItem(key.toString());
+    } catch (error) {
+      console.error('Error eliminando item:', error);
+      throw error;
+    }
+  },
+
 };
 
 export { Keys, StorageService };

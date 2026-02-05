@@ -1,4 +1,5 @@
 import { GlobalStyle } from '@/constants/theme';
+import { StorageService } from '@/services/storage.service';
 import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useRouter } from 'expo-router';
@@ -48,6 +49,10 @@ const AccountScreen = () => {
           <OptionItem icon="palette" label="Apariencia" onPress={() => router.push('/billetera')} />
           <OptionItem icon="building-circle-arrow-right" label="Registrar mi centro deportivo" onPress={() => router.push('/billetera')} />
         </View>
+
+        <TouchableOpacity onPress={async () => await StorageService.ClearStorage()}>
+          <Text>Limpiar storage</Text>
+        </TouchableOpacity>
 
         <TouchableOpacity onPress={() => router.push('/login')}>
           <Text style={styles.logoutButtonText}>Cerrar Sesión</Text>

@@ -32,10 +32,12 @@ const HomeScreen = () => {
 
   const LoadLocation = async () => {
 
-    const result = await LocationService.LoadUserLocation();
+    const result = await LocationService.LoadAndSaveUserLocation();
 
-    setCity(result?.City || '');
-    setCountry(result?.Country || '');
+    if (result) {
+      setCity(result.City);
+      setCountry(result.Country);
+    }
   };
 
   useEffect(() => {

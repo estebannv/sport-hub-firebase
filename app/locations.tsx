@@ -93,7 +93,7 @@ const LocationsScreen = () => {
     setLoading(true);
     try {
       // LoadUserLocation ya solicita permisos y guarda la ubicación
-      const result = await LocationService.LoadUserLocation();
+      const result = await LocationService.LoadAndSaveUserLocation();
       
       if (result) {
         // La ubicación ya fue guardada en la API y en el almacenamiento local
@@ -115,7 +115,7 @@ const LocationsScreen = () => {
   const handleSelectLocation = async (location: LocationWithId) => {
     try {
       // Guardar en almacenamiento local como ubicación actual
-      await StorageService.Set(Keys.Location, JSON.stringify(location));
+      await StorageService.Set(Keys.Location, location);
       setCurrentLocation(location);
       Alert.alert('Éxito', 'Ubicación actualizada');
       // Regresar a la pantalla anterior después de un breve delay
@@ -152,7 +152,7 @@ const LocationsScreen = () => {
                 if (currentLocation && 
                     currentLocation.City === location.City && 
                     currentLocation.Country === location.Country) {
-                  await StorageService.Set(Keys.Location, '');
+                  await StorageService.ClearItem(Keys.Location);
                   setCurrentLocation(null);
                 }
                 

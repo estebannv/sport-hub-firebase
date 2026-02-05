@@ -24,7 +24,7 @@ const LoginScreen = () => {
 	const [loading, setLoading] = useState(false);
 
 	const LoadLocation = async () => {
-		await LocationService.LoadUserLocation();
+		await LocationService.AskUserLocationAndSaveInStorage();
 	};
 
 	useEffect(() => {
@@ -64,11 +64,8 @@ const LoginScreen = () => {
 			var passwordEncrypted = EncryptionUtil.Encrypt(password);
 			var response = await AuthService.SignIn({ Email: email, Password: passwordEncrypted.encryptedData });
 
-			if (response.Status == 200) {
-				// Guardar el token de forma segura
-				if (response.Data) {
-					await StorageService.Set(Keys.Token, response.Data);
-				}
+			if (response.Successful) {
+				await StorageService.Set(Keys.Token, response.Data);
 				router.push('/(tabs)/home')
 			} else {
 				setErrorOutput(response.Message || '')

@@ -5,12 +5,16 @@ import { Keys, StorageService } from '@/services/storage.service';
  * @returns El token de autenticación o null si no existe
  */
 export const getAuthToken = async (): Promise<string | null> => {
+
   try {
     const token = await StorageService.Get<string>(Keys.Token);
+
     if (token && typeof token === 'string') {
       return token;
     }
+
     return null;
+
   } catch (error) {
     console.error('Error obteniendo token:', error);
     return null;
@@ -23,7 +27,9 @@ export const getAuthToken = async (): Promise<string | null> => {
  * @returns Headers con Content-Type y Authorization (si hay token)
  */
 export const getAuthHeaders = async (additionalHeaders?: Record<string, string>): Promise<HeadersInit> => {
+  
   const token = await getAuthToken();
+  
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
     ...additionalHeaders
