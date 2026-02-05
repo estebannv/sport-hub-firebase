@@ -4,7 +4,6 @@ import { ApiResponse } from '../types/api-response.type';
 import { LocationType } from '../types/location.type';
 import { HandleResponse } from '../utils/api-response.utils';
 import { getAuthHeaders } from '../utils/auth-headers.utils';
-import { Keys, StorageService } from './storage.service';
 
 const api = `${Constants.expoConfig?.extra?.apiUrl}/location`;
 
@@ -47,7 +46,6 @@ export const LocationService = {
 
   async SaveLocation(location: ILocation): Promise<ApiResponse<string>> {
     const headers = await getAuthHeaders();
-    console.log('Headers:', headers);
     const url = `${api}/user`;
     const response = await fetch(url, {
       method: 'POST',
@@ -80,7 +78,7 @@ export const LocationService = {
     return await HandleResponse<boolean>(response);
   },
 
-  async AskUserLocationAndSaveInStorage(): Promise<ILocation | null> {
+  async AskUserLocation(): Promise<ILocation | null> {
 
     const { status } = await Location.requestForegroundPermissionsAsync();
 
@@ -90,7 +88,7 @@ export const LocationService = {
 
     const location = await Location.getCurrentPositionAsync({});
     const geocode = await Location.reverseGeocodeAsync(location.coords);
-    
+
     if (geocode?.length > 0) {
 
       const { city, country } = geocode[0];
@@ -102,40 +100,11 @@ export const LocationService = {
         Longitude: location.coords.longitude
       };
 
-      await StorageService.Set(Keys.Location, newLocation);
-
       return newLocation;
 
     } else {
       console.log('Failed to get location');
     }
-    return null;
-  },
-
-  async LoadAndSaveUserLocation(): Promise<ILocation | null> {
-    
-    try {
-
-      const locationData = await StorageService.Get<ILocation>(Keys.Location);
-
-      if (!locationData) {
-        
-        var newLocation = await this.AskUserLocationAndSaveInStorage();
-
-        if (newLocation) {
-          this.SaveLocation(newLocation);
-          return newLocation;
-        } else {
-          throw new Error('Failed to get location');
-        }
-      }
-
-      return locationData;
-      
-    } catch (error) {
-      console.error('Error loading user location:', (error as Error).message);
-    }
-    
     return null;
   },
 };

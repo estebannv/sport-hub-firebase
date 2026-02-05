@@ -1,5 +1,5 @@
 import AuthService from '@/services/auth.service';
-import LocationService from '@/services/location.service';
+import LocationService, { ILocation } from '@/services/location.service';
 import { Keys, StorageService } from '@/services/storage.service';
 import ValidationService from '@/services/validation.service';
 import EncryptionUtil from '@/utils/encryption.util';
@@ -24,7 +24,18 @@ const LoginScreen = () => {
 	const [loading, setLoading] = useState(false);
 
 	const LoadLocation = async () => {
-		await LocationService.AskUserLocationAndSaveInStorage();
+
+		var location = await StorageService.Get<ILocation>(Keys.Location);
+
+		if (location) {
+			return;
+		}
+
+		var result = await LocationService.AskUserLocation();
+
+		if (result) {
+			await StorageService.Set(Keys.Location, result);
+		}
 	};
 
 	useEffect(() => {

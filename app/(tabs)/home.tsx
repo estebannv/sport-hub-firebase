@@ -1,5 +1,6 @@
 import { CommonService, IParameter } from '@/services/common.service';
-import LocationService from '@/services/location.service';
+import LocationService, { ILocation } from '@/services/location.service';
+import { Keys, StorageService } from '@/services/storage.service';
 import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -32,7 +33,15 @@ const HomeScreen = () => {
 
   const LoadLocation = async () => {
 
-    const result = await LocationService.LoadAndSaveUserLocation();
+    var result = await StorageService.Get<ILocation>(Keys.Location);
+
+    if (!result) {
+      result = await LocationService.AskUserLocation();
+      if (result) {
+        await StorageService.Set(Keys.Location, result);
+        await LocationService.SaveLocation(result);
+      }
+    }
 
     if (result) {
       setCity(result.City);
