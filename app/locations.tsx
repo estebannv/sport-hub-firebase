@@ -56,29 +56,12 @@ const LocationsScreen = () => {
   const [loading, setLoading] = useState(false);
 
   const loadLocations = async () => {
+
     try {
-      // Cargar ubicaciones desde la API
+
       const locationsResponse = await LocationService.GetLocations();
+      setLocations(locationsResponse?.Data || []);
       
-      if (locationsResponse.Successful && locationsResponse.Data) {
-        setLocations(locationsResponse.Data as LocationWithId[]);
-      }
-      
-      // Cargar ubicación actual desde almacenamiento local
-      const savedLocationData = await StorageService.Get<ILocation>(Keys.Location);
-      if (savedLocationData) {
-        try {
-          let location: ILocation;
-          if (typeof savedLocationData === 'string') {
-            location = JSON.parse(savedLocationData) as ILocation;
-          } else {
-            location = savedLocationData as ILocation;
-          }
-          setCurrentLocation(location);
-        } catch (e) {
-          console.error('Error parsing location data:', e);
-        }
-      }
     } catch (error) {
       console.error('Error cargando ubicaciones:', error);
       Alert.alert('Error', 'No se pudieron cargar las ubicaciones');
@@ -93,15 +76,11 @@ const LocationsScreen = () => {
     setLoading(true);
     try {
       // LoadUserLocation ya solicita permisos y guarda la ubicación
-      const result = await LocationService.LoadAndSaveUserLocation();
+      const result = await LocationService.AskUserLocation();
       
       if (result) {
-        // La ubicación ya fue guardada en la API y en el almacenamiento local
-        setCurrentLocation(result);
+        await LocationService.SaveLocation(result);
         await loadLocations();
-        Alert.alert('Éxito', 'Ubicación agregada correctamente');
-      } else {
-        Alert.alert('Error', 'No se pudo obtener la ubicación. Verifica los permisos de ubicación.');
       }
     } catch (error: any) {
       console.error('Error agregando ubicación:', error);
@@ -144,11 +123,11 @@ const LocationsScreen = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              // Eliminar de la API
-              const deleteResponse = await LocationService.DeleteLocation(location._id!);
               
+              const deleteResponse = await LocationService.DeleteLocation(location._id!);
+
               if (deleteResponse.Successful) {
-                // Si la ubicación eliminada era la actual, limpiar la ubicación actual
+                
                 if (currentLocation && 
                     currentLocation.City === location.City && 
                     currentLocation.Country === location.Country) {
@@ -157,12 +136,12 @@ const LocationsScreen = () => {
                 }
                 
                 await loadLocations();
+                
               } else {
                 Alert.alert('Error', deleteResponse.Message || 'No se pudo eliminar la ubicación');
               }
             } catch (error) {
               console.error('Error eliminando ubicación:', error);
-              Alert.alert('Error', 'No se pudo eliminar la ubicación');
             }
           },
         },

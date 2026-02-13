@@ -33,20 +33,34 @@ const HomeScreen = () => {
 
   const LoadLocation = async () => {
 
-    var result = await StorageService.Get<ILocation>(Keys.Location);
+    var locationsResponse = await LocationService.GetLocations();
 
-    if (!result) {
-      result = await LocationService.AskUserLocation();
-      if (result) {
-        await StorageService.Set(Keys.Location, result);
-        await LocationService.SaveLocation(result);
+    if (locationsResponse?.Data?.length == 0) {
+
+      var location = await StorageService.Get<ILocation>(Keys.Location);
+
+      console.log('Location', location);
+
+      if (location) {
+        setCity(location.City);
+        setCountry(location.Country);
+        await LocationService.SaveLocation(location);
+
+      } else {
+
+        var result = await LocationService.AskUserLocation();
+
+        if (result) {
+          await LocationService.SaveLocation(result);
+          setCity(result.City);
+          setCountry(result.Country);
+        }
       }
+    } else {
+      setCity(locationsResponse.Data[0].City);
+      setCountry(locationsResponse.Data[0].Country);
     }
 
-    if (result) {
-      setCity(result.City);
-      setCountry(result.Country);
-    }
   };
 
   useEffect(() => {
