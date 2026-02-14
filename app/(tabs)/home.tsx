@@ -9,8 +9,10 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Card } from '../../components/home/Card';
-import { CategoryCarousel } from '../../components/home/carousel-category.component';
+import { CardPlaceholder } from '../../components/home/card/card-placeholder.component';
+import { Card } from '../../components/home/card/card.component';
+import { CategoryCarouselPlaceholder } from '../../components/home/category/carousel-category-placeholder.component';
+import { CategoryCarousel } from '../../components/home/category/carousel-category.component';
 import { Colors, GlobalStyle } from '../../constants/theme';
 
 const featuredCenters = [
@@ -96,54 +98,34 @@ const HomeScreen = () => {
           </View>
         </Link>
 
-        <FlatList
-          data={categories}
-          renderItem={({ item }) => <CategoryCarousel item={item} />}
-          keyExtractor={(item) => item._id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.featuredCategories}
-        />
+        {true ? (
+          <CategoryCarouselPlaceholder />
+        ) : (
+          <FlatList
+            data={categories}
+            renderItem={({ item }) => <CategoryCarousel item={item} />}
+            keyExtractor={(item) => item._id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.featuredCategories}
+          />
+        )}
 
-        <Text style={styles.sectionTitle}>Destacados en tu zona</Text>
-        <FlatList
-          data={featuredCenters}
-          renderItem={({ item }) => <Card item={item} />}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.featuredCenters}
-        />
-
-        <Text style={styles.sectionTitle}>Destacados en tu zona</Text>
-        <FlatList
-          data={featuredCenters}
-          renderItem={({ item }) => <Card item={item} />}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.featuredCenters}
-        />
-
-        <Text style={styles.sectionTitle}>Destacados en tu zona</Text>
-        <FlatList
-          data={featuredCenters}
-          renderItem={({ item }) => <Card item={item} />}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.featuredCenters}
-        />
-
-        <Text style={styles.sectionTitle}>Destacados en tu zona</Text>
-        <FlatList
-          data={featuredCenters}
-          renderItem={({ item }) => <Card item={item} />}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.featuredCenters}
-        />
+        {true ? (
+          <CardPlaceholder />
+        ) : (
+          <>
+            <Text style={styles.sectionTitle}>Destacados en tu zona</Text>
+            <FlatList
+              data={featuredCenters}
+              renderItem={({ item }) => <Card item={item} />}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.featuredCenters}
+            />
+          </>
+        )}
 
       </ScrollView>
 
@@ -214,10 +196,11 @@ const styles = StyleSheet.create({
   //Categories list
   featuredCenters: {
     paddingLeft: GlobalStyle.PaddingHorizontal,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+    paddingTop: 10,
   },
   featuredCategories: {
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
   //Categories list
   sectionTitle: {
