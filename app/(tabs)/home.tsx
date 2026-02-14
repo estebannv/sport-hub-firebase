@@ -1,4 +1,4 @@
-import { CommonService, IParameter } from '@/services/common.service';
+import { useCategories } from '@/hooks/useCategories';
 import LocationService, { ILocation } from '@/services/location.service';
 import { Keys, StorageService } from '@/services/storage.service';
 import Entypo from '@expo/vector-icons/Entypo';
@@ -22,14 +22,9 @@ const featuredCenters = [
 const HomeScreen = () => {
 
   const router = useRouter();
-  const [categories, setCategories] = useState<IParameter[]>([]);
+  const { categories, loading } = useCategories();
   const [city, setCity] = useState<string | undefined>(undefined);
   const [country, setCountry] = useState<string>('');
-
-  const LoadCategories = async () => {
-    const result = await CommonService.Parameters('categories');
-    setCategories(result?.Data || []);
-  };
 
   const LoadLocation = async () => {
 
@@ -65,7 +60,6 @@ const HomeScreen = () => {
 
   useEffect(() => {
     LoadLocation();
-    LoadCategories();
   }, []);
 
   return (
