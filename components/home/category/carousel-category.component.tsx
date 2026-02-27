@@ -16,11 +16,12 @@ const styles = StyleSheet.create({
   container: {
     width: 68,
     marginBottom: 20,
-    marginLeft: 10
+    marginLeft: 10,
+    marginTop: 10,
   },
   iconContainer: {
     alignItems: 'center',
-    marginBottom: 15
+    marginBottom: 12
   },
   icon: {
     fontSize: 40,

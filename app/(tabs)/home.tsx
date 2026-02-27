@@ -1,6 +1,7 @@
 import { useCategories } from '@/hooks/useCategories';
 import LocationService, { ILocation } from '@/services/location.service';
 import { Keys, StorageService } from '@/services/storage.service';
+import UserService from '@/services/user.service';
 import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -24,44 +25,41 @@ const featuredCenters = [
 const HomeScreen = () => {
 
   const router = useRouter();
-  const { categories, loading } = useCategories();
+  const { categories, loadingCategories } = useCategories();
   const [city, setCity] = useState<string | undefined>(undefined);
   const [country, setCountry] = useState<string>('');
 
-  const LoadLocation = async () => {
+  const GetUserInformation = async () => {
 
-    var locationsResponse = await LocationService.GetLocations();
+    var userResponse = await UserService.GetUserInformation();
 
-    if (locationsResponse?.Data?.length == 0) {
-
-      var location = await StorageService.Get<ILocation>(Keys.Location);
-
-      console.log('Location', location);
-
-      if (location) {
-        setCity(location.City);
-        setCountry(location.Country);
-        await LocationService.SaveLocation(location);
-
-      } else {
-
-        var result = await LocationService.AskUserLocation();
-
-        if (result) {
-          await LocationService.SaveLocation(result);
-          setCity(result.City);
-          setCountry(result.Country);
-        }
-      }
-    } else {
-      setCity(locationsResponse.Data[0].City);
-      setCountry(locationsResponse.Data[0].Country);
+    if (userResponse?.Data?.Location){
+      setCity(userResponse.Data.Location.City);
+      setCountry(userResponse.Data.Location.Country);
+      return;
     }
 
+    var location = await StorageService.Get<ILocation>(Keys.Location);
+
+    if (location) {
+      setCity(location.City);
+      setCountry(location.Country);
+      await LocationService.SaveLocation(location);
+      return;
+    }
+
+    var result = await LocationService.AskUserLocation();
+
+    if (result) {
+      setCity(result.City);
+      setCountry(result.Country);
+      await LocationService.SaveLocation(result);
+      return;
+    }
   };
 
   useEffect(() => {
-    LoadLocation();
+    GetUserInformation();
   }, []);
 
   return (
@@ -98,7 +96,7 @@ const HomeScreen = () => {
           </View>
         </Link>
 
-        {true ? (
+        {loadingCategories ? (
           <CategoryCarouselPlaceholder />
         ) : (
           <FlatList

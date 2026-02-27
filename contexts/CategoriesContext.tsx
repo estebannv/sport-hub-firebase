@@ -3,7 +3,7 @@ import React, { createContext, ReactNode, useEffect, useState } from 'react';
 
 interface CategoriesContextType {
   categories: IParameter[];
-  loading: boolean;
+  loadingCategories: boolean;
   refreshCategories: () => Promise<void>;
 }
 
@@ -15,18 +15,18 @@ interface CategoriesProviderProps {
 
 export const CategoriesProvider: React.FC<CategoriesProviderProps> = ({ children }) => {
   const [categories, setCategories] = useState<IParameter[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loadingCategories, setLoadingCategories] = useState<boolean>(true);
 
   const loadCategories = async () => {
     try {
-      setLoading(true);
+      setLoadingCategories(true);
       const result = await CommonService.Parameters('categories');
       setCategories(result?.Data || []);
     } catch (error) {
       console.error('Error loading categories:', error);
       setCategories([]);
     } finally {
-      setLoading(false);
+      setLoadingCategories(false);
     }
   };
 
@@ -39,7 +39,7 @@ export const CategoriesProvider: React.FC<CategoriesProviderProps> = ({ children
   }, []);
 
   return (
-    <CategoriesContext.Provider value={{ categories, loading, refreshCategories }}>
+    <CategoriesContext.Provider value={{ categories, loadingCategories, refreshCategories }}>
       {children}
     </CategoriesContext.Provider>
   );

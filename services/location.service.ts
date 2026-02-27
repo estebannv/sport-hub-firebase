@@ -56,17 +56,6 @@ export const LocationService = {
     return await HandleResponse<string>(response);
   },
 
-  async GetLocations(): Promise<ApiResponse<ILocation[]>> {
-    const headers = await getAuthHeaders();
-    const url = `${api}/user`;
-    const response = await fetch(url, {
-      method: 'GET',
-      headers
-    });
-
-    return await HandleResponse<ILocation[]>(response);
-  },
-
   async DeleteLocation(locationId: string): Promise<ApiResponse<boolean>> {
     const headers = await getAuthHeaders();
     const url = `${api}/user/${locationId}`;
@@ -87,25 +76,21 @@ export const LocationService = {
     }
 
     const location = await Location.getCurrentPositionAsync({});
-    const geocode = await Location.reverseGeocodeAsync(location.coords);
+    
+    if (location.coords) {
+      
+      const geocode = await Location.reverseGeocodeAsync(location.coords);
 
-    if (geocode?.length > 0) {
-
-      const { city, country } = geocode[0];
-
-      const newLocation: ILocation = {
-        City: city || '',
-        Country: country || '',
+      return {
+        City: geocode?.[0]?.city || 'No disponible',
+        Country: geocode?.[0]?.country || 'No disponible',
         Latitude: location.coords.latitude,
-        Longitude: location.coords.longitude
+        Longitude: location.coords.longitude,
       };
 
-      return newLocation;
-
     } else {
-      console.log('Failed to get location');
+      return null;
     }
-    return null;
   },
 };
 
