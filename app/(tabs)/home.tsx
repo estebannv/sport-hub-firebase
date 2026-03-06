@@ -1,7 +1,11 @@
+import { Banner } from '@/components/home/banner/banner.componet';
+import { Card } from '@/components/home/card/card.component';
 import { useCategories } from '@/hooks/useCategories';
+import HomeService from '@/services/home.service';
 import LocationService, { ILocation } from '@/services/location.service';
 import { Keys, StorageService } from '@/services/storage.service';
 import UserService from '@/services/user.service';
+import { BannerItem, CardItem, HomeContentRaw } from '@/types/home.type';
 import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -11,32 +15,29 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CardPlaceholder } from '../../components/home/card/card-placeholder.component';
-import { Card } from '../../components/home/card/card.component';
 import { CategoryCarouselPlaceholder } from '../../components/home/category/carousel-category-placeholder.component';
 import { CategoryCarousel } from '../../components/home/category/carousel-category.component';
 import { Colors, GlobalStyle } from '../../constants/theme';
-
-const featuredCenters = [
-  { id: '1', name: 'Super Padel Center', rating: 4.9, reviews: 500, deliveryTime: 15, image: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=500&q=80' },
-  { id: '2', name: 'Gimnasio Rock Solid', rating: 4.7, reviews: 230, deliveryTime: 20, image: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=500&q=80' },
-  { id: '3', name: 'Gimnasio Rock Solid', rating: 4.7, reviews: 230, deliveryTime: 20, image: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=500&q=80' },
-];
 
 const HomeScreen = () => {
 
   const router = useRouter();
   const { categories, loadingCategories } = useCategories();
+  const [homeContent, setHomeContent] = useState<HomeContentRaw[]>([]);
+  const [loadingHomeContent, setLoadingHomeContent] = useState<boolean>(true);
   const [city, setCity] = useState<string | undefined>(undefined);
   const [country, setCountry] = useState<string>('');
 
-  const GetUserInformation = async () => {
+  const GetUserLocation = async (): Promise<ILocation | null> => {
 
     var userResponse = await UserService.GetUserInformation();
 
     if (userResponse?.Data?.Location){
-      setCity(userResponse.Data.Location.City);
-      setCountry(userResponse.Data.Location.Country);
-      return;
+      const userLocation = userResponse.Data.Location;
+      setCity(userLocation.City);
+      setCountry(userLocation.Country);
+      await StorageService.Set(Keys.Location, userLocation);
+      return userLocation;
     }
 
     var location = await StorageService.Get<ILocation>(Keys.Location);
@@ -45,7 +46,7 @@ const HomeScreen = () => {
       setCity(location.City);
       setCountry(location.Country);
       await LocationService.SaveLocation(location);
-      return;
+      return location;
     }
 
     var result = await LocationService.AskUserLocation();
@@ -54,13 +55,39 @@ const HomeScreen = () => {
       setCity(result.City);
       setCountry(result.Country);
       await LocationService.SaveLocation(result);
-      return;
+      return result;
     }
+
+    return null;
   };
 
   useEffect(() => {
-    GetUserInformation();
+
+    const InitializeHome = async () => {
+      const location = await GetUserLocation();
+      await GetHomeContent(location);
+    };
+
+    InitializeHome();
   }, []);
+
+  const GetHomeContent = async (resolvedLocation?: ILocation | null) => {
+    
+    setLoadingHomeContent(true);
+
+    const location = resolvedLocation || await StorageService.Get<ILocation>(Keys.Location);
+
+    if (location) {
+
+      const response = await HomeService.HomeContent(location.Latitude, location.Longitude);
+
+      if (response.Successful) {
+        setHomeContent(response.Data);
+      }
+    }
+
+    setLoadingHomeContent(false);
+  };
 
   return (
 
@@ -109,19 +136,23 @@ const HomeScreen = () => {
           />
         )}
 
-        {true ? (
+        {loadingHomeContent ? (
           <CardPlaceholder />
         ) : (
           <>
-            <Text style={styles.sectionTitle}>Destacados en tu zona</Text>
-            <FlatList
-              data={featuredCenters}
-              renderItem={({ item }) => <Card item={item} />}
-              keyExtractor={(item) => item.id}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.featuredCenters}
-            />
+            {homeContent.map((section, index) => {
+              if (!section.component) return null;
+
+              if (!('props' in section) || !section.props) return null;
+
+              return (
+                <View key={`${section.component}-${index}`} style={styles.dynamicSectionContainer}>
+                  {section.title ? <Text style={styles.sectionTitle}>{section.title}</Text> : null}
+                  {section.component === 'card' && <Card item={section.props as unknown as CardItem} />}
+                  {section.component === 'banner' && <Banner item={section.props as unknown as BannerItem} />}
+                </View>
+              );
+            })}
           </>
         )}
 
@@ -208,6 +239,9 @@ const styles = StyleSheet.create({
       paddingBottom: 12,
       backgroundColor: 'white'
     },
+  dynamicSectionContainer: {
+    backgroundColor: 'white',
+  },
 });
 
 export default HomeScreen;

@@ -1,18 +1,16 @@
 import { GlobalStyle } from '@/constants/theme';
-import { CardItem } from '@/types/home.type';
 import { Link } from 'expo-router';
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 
-export const Card = ({ item }: { item: CardItem }) => (
+export interface BannerItem {
+  id: string;
+  name: string;
+}
+
+export const Banner = ({ item }: { item: BannerItem }) => (
   <Link href={`/center/${item.id}`} asChild>
-    <TouchableOpacity style={styles.container}>
-      <Image source={{ uri: item.image }} style={styles.image} />
-      <View style={styles.descriptionContainer}>
-        <Text style={styles.descriptionName}>{item.name}</Text>
-        <Text style={styles.descriptionDetail}>⭐️ {item.rating} • Fútbol, Basketball, Tennis, Pádel • 5.5 km</Text>
-      </View>
-    </TouchableOpacity>
+    <Text style={styles.descriptionName}>{item.name}</Text>
   </Link>
 );
 
