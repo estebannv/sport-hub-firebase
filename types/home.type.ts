@@ -1,6 +1,6 @@
 export interface CardItem {
     id: string;
-    name: string;
+    Name: string;
     rating: number;
     reviews: number;
     deliveryTime: number;

@@ -9,7 +9,7 @@ export const Card = ({ item }: { item: CardItem }) => (
     <TouchableOpacity style={styles.container}>
       <Image source={{ uri: item.image }} style={styles.image} />
       <View style={styles.descriptionContainer}>
-        <Text style={styles.descriptionName}>{item.name}</Text>
+        <Text style={styles.descriptionName}>{item.Name}</Text>
         <Text style={styles.descriptionDetail}>⭐️ {item.rating} • Fútbol, Basketball, Tennis, Pádel • 5.5 km</Text>
       </View>
     </TouchableOpacity>
