@@ -129,7 +129,7 @@ const HomeScreen = () => {
           <FlatList
             data={categories}
             renderItem={({ item }) => <CategoryCarousel item={item} />}
-            keyExtractor={(item) => item._id}
+            keyExtractor={(item, index) => item._id ?? `category-${index}`}
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.featuredCategories}
@@ -155,7 +155,7 @@ const HomeScreen = () => {
                       <FlatList
                         data={items as CardItem[]}
                         renderItem={({ item }) => <Card item={item} />}
-                        keyExtractor={(item) => item.id}
+                        keyExtractor={(item, idx) => item?.id ?? `card-${index}-${idx}`}
                         horizontal
                         showsHorizontalScrollIndicator={false}
                         contentContainerStyle={styles.featuredCenters}

@@ -13,8 +13,8 @@ export const Banner = ({ title, items }: BannerProps) => (
   <View style={styles.container}>
     {title ? <Text style={styles.sectionTitle}>{title}</Text> : null}
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.itemsContainer}>
-      {items.map((item) => (
-        <Link key={item.id} href={`/center/${item.id}`} asChild>
+      {items.map((item, index) => (
+        <Link key={item.id ?? `banner-${index}`} href={`/center/${item.id}`} asChild>
           <View style={styles.item}>
             <Text style={styles.descriptionName}>{item.name}</Text>
           </View>
