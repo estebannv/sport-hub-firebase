@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
   featuredCenters: {
     paddingLeft: GlobalStyle.PaddingHorizontal,
     backgroundColor: 'white',
-    paddingTop: 10,
+    paddingBottom: 20,
   },
   featuredCategories: {
     backgroundColor: 'white',
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
       fontSize: 19,
       fontWeight: '700',
       paddingHorizontal: GlobalStyle.PaddingHorizontal,
-      paddingBottom: 12,
+      paddingBottom: 14,
       backgroundColor: 'white'
     },
   dynamicSectionContainer: {

@@ -7,10 +7,10 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 export const Card = ({ item }: { item: CardItem }) => (
   <Link href={`/center/${item.id}`} asChild>
     <TouchableOpacity style={styles.container}>
-      <Image source={{ uri: item.image }} style={styles.image} />
+      <Image source={{ uri: item.MainImage }} style={styles.image} />
       <View style={styles.descriptionContainer}>
         <Text style={styles.descriptionName}>{item.Name}</Text>
-        <Text style={styles.descriptionDetail}>⭐️ {item.rating} • Fútbol, Basketball, Tennis, Pádel • 5.5 km</Text>
+        <Text style={styles.descriptionDetail}>5.5 km • Fútbol, Basketball, Tennis, Pádel</Text>
       </View>
     </TouchableOpacity>
   </Link>

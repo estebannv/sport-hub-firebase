@@ -4,7 +4,7 @@ export interface CardItem {
     rating: number;
     reviews: number;
     deliveryTime: number;
-    image: string;
+    MainImage: string;
 }
 
 export interface BannerItem {

@@ -13,8 +13,9 @@ const HomeService = {
     const url = `${api}/content?latitude=${latitude}&longitude=${longitude}`;
     const headers = await getAuthHeaders();
     const response = await fetch(url, { headers });
-    
-    return await HandleResponse<HomeContentRaw[]>(response);
+    var result = await HandleResponse<HomeContentRaw[]>(response);
+    console.log(result);
+    return result;
   }
 
 };
