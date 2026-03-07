@@ -141,15 +141,30 @@ const HomeScreen = () => {
         ) : (
           <>
             {homeContent.map((section, index) => {
-              if (!section.component) return null;
+              
+              if (!section.component || !section.props) 
+                return null;
 
-              if (!('props' in section) || !section.props) return null;
+              const { title, items } = section.props;
 
               return (
                 <View key={`${section.component}-${index}`} style={styles.dynamicSectionContainer}>
-                  {section.title ? <Text style={styles.sectionTitle}>{section.title}</Text> : null}
-                  {section.component === 'card' && <Card item={section.props as unknown as CardItem} />}
-                  {section.component === 'banner' && <Banner item={section.props as unknown as BannerItem} />}
+                  {section.component === 'card' && (
+                    <>
+                      {title ? <Text style={styles.sectionTitle}>{title}</Text> : null}
+                      <FlatList
+                        data={items as CardItem[]}
+                        renderItem={({ item }) => <Card item={item} />}
+                        keyExtractor={(item) => item.id}
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.featuredCenters}
+                      />
+                    </>
+                  )}
+                  {section.component === 'banner' && (
+                    <Banner title={title} items={items as BannerItem[]} />
+                  )}
                 </View>
               );
             })}

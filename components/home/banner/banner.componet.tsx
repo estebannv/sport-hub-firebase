@@ -1,21 +1,43 @@
 import { GlobalStyle } from '@/constants/theme';
+import { BannerItem } from '@/types/home.type';
 import { Link } from 'expo-router';
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-export interface BannerItem {
-  id: string;
-  name: string;
+export interface BannerProps {
+  title?: string;
+  items: BannerItem[];
 }
 
-export const Banner = ({ item }: { item: BannerItem }) => (
-  <Link href={`/center/${item.id}`} asChild>
-    <Text style={styles.descriptionName}>{item.name}</Text>
-  </Link>
+export const Banner = ({ title, items }: BannerProps) => (
+  <View style={styles.container}>
+    {title ? <Text style={styles.sectionTitle}>{title}</Text> : null}
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.itemsContainer}>
+      {items.map((item) => (
+        <Link key={item.id} href={`/center/${item.id}`} asChild>
+          <View style={styles.item}>
+            <Text style={styles.descriptionName}>{item.name}</Text>
+          </View>
+        </Link>
+      ))}
+    </ScrollView>
+  </View>
 );
 
 const styles = StyleSheet.create({
   container: {
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 19,
+    fontWeight: '700',
+    paddingHorizontal: GlobalStyle.PaddingHorizontal,
+    paddingBottom: 12,
+  },
+  itemsContainer: {
+    paddingHorizontal: GlobalStyle.PaddingHorizontal,
+  },
+  item: {
     width: 250,
     marginRight: 16,
   },

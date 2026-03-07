@@ -12,8 +12,12 @@ export interface BannerItem {
     name: string;
 }
 
-export interface HomeContentRaw {
+export interface HomeContentSectionProps {
     title?: string;
-    component?: string;
-    props?: [CardItem | BannerItem];
+    items: CardItem[] | BannerItem[];
+}
+
+export interface HomeContentRaw {
+    component: string;
+    props: HomeContentSectionProps;
 }
